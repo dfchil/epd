@@ -5,6 +5,7 @@
 
 KOS_INIT_FLAGS(INIT_DEFAULT);
 
+#define DEBUG
 #ifdef DEBUG
 #include <arch/gdb.h>
 #endif
@@ -15,7 +16,7 @@ KOS_INIT_FLAGS(INIT_DEFAULT);
 #endif
 
 #include <dc/pvr.h>
-#include <enDJinn/core.h>
+#include <enDjinn/core.h>
 
 static pvr_init_params_t pvr_params = {
     {PVR_BINSIZE_16, PVR_BINSIZE_16, PVR_BINSIZE_16, PVR_BINSIZE_16,
@@ -31,7 +32,7 @@ static pvr_init_params_t pvr_params = {
 int main(__unused int argc, __unused char **argv) {
 #ifdef DEBUG
   gdb_init();
-  DEBUG_PRINT("basepath %s\n", BASEPATH);
+  DEBUG_PRINT("CBASEPATH %s\n", CBASEPATH);
 
   perf_monitor_init(PMCR_OPERAND_CACHE_READ_MISS_MODE,
                     PMCR_INSTRUCTION_CACHE_MISS_MODE);
@@ -51,7 +52,7 @@ int main(__unused int argc, __unused char **argv) {
   profiler_start();
 #endif
 
-  enDJinn_loop();
+  enDjinn_loop();
 
 #ifdef DCPROF
   profiler_stop();
@@ -63,7 +64,7 @@ int main(__unused int argc, __unused char **argv) {
 #ifdef DEBUG
   perf_monitor_print(stdout);
 
-  FILE *stats_out = fopen(BASEPATH "/pstats.txt", "a");
+  FILE *stats_out = fopen(CBASEPATH "/pstats.txt", "a");
   if (stats_out != NULL) {
     perf_monitor_print(stats_out);
     fclose(stats_out);

@@ -15,7 +15,7 @@ KOS_INIT_FLAGS(INIT_DEFAULT);
 #endif
 
 #include <dc/pvr.h>
-#include <enDjinn/core.h>
+#include <enDjinn/enj_enDjinn.h>
 
 static pvr_init_params_t pvr_params = {
     {PVR_BINSIZE_16, PVR_BINSIZE_16, PVR_BINSIZE_16, PVR_BINSIZE_16,
@@ -41,17 +41,16 @@ int main(__unused int argc, __unused char **argv) {
   pvr_set_bg_color(0.0, 0.0, 24.0f / 255.0f);
   pvr_init(&pvr_params);
 
-  if (!core_init()) {
-    // DEBUG_PRINT("Core init failed, exiting\n");
-    return -1;
-  };
+  // if (!core_init()) {
+  //   // DEBUG_PRINT("Core init failed, exiting\n");
+  //   return -1;
+  // };
 
 #ifdef DCPROF
   profiler_init("/pc/gmon.out");
   profiler_start();
 #endif
 
-  // enj_run();
 
 #ifdef DCPROF
   profiler_stop();

@@ -26,7 +26,7 @@ static void subdivide(terrain_t* terrain, size_t offset_left, size_t offset_righ
   subdivide(terrain, offset_mid, offset_right, roughness * 0.75);
 }
 
-#define PLAYER_TERRAIN_VERT_WIDTH 4
+#define PLAYER_TERRAIN_VERT_WIDTH 5
 
 terrain_t* terrain_generate(int num_players, int seed, float roughness) {
   size_t num_verts = vid_mode->width >> 2; // one vertex every 4 pixels
@@ -34,32 +34,39 @@ terrain_t* terrain_generate(int num_players, int seed, float roughness) {
   if (!terrain) {
     return NULL;
   }
-  terrain->verts = (shz_vec2_t*)(terrain + 1);
-
-  // divide playfield among players
-  int vert_seperation = (num_verts - (num_players - 1) * PLAYER_TERRAIN_VERT_WIDTH) / num_players;
-  printf("vert_seperation: %d\n", vert_seperation);
-
+  terrain->verts = (shz_vec2_t*)(terrain + 1);  
   float x_step = (float)(vid_mode->width * ENJ_XSCALE) / (float)(num_verts - 1);
   for (size_t i = 0; i < num_verts; i++) {
     terrain->verts[i].x = x_step * (float)i;
   }
-
+ 
   terrain->min_y = (vid_mode->height >> 4);
-  terrain->max_y = (vid_mode->height >> 4) * 14;
+  terrain->max_y = (vid_mode->height >> 4) * 11;
   terrain->seed = seed;
   terrain->roughness = roughness;
-
+  
   terrain->num_verts = num_verts;
   srand(seed);
-
+  
   terrain->verts[0].x = 0.0f;
   terrain->verts[num_verts - 1].y = terrain->min_y + 
-    (float)(rand() % (int)(terrain->max_y - terrain->min_y)>>2);
+  (float)(rand() % (int)(terrain->max_y - terrain->min_y)>>1);
   terrain->verts[0].y = terrain->min_y + 
-    (float)(rand() % (int)(terrain->max_y - terrain->min_y)>>2);
-
+  (float)(rand() % (int)(terrain->max_y - terrain->min_y)>>1);
+  
   terrain->verts[num_verts - 1].x = (float)vid_mode->width * ENJ_XSCALE;
   subdivide(terrain, 0, terrain->num_verts - 1, roughness);
+
+  // make small flat section for each player start
+  int vert_seperation = (num_verts - num_players * PLAYER_TERRAIN_VERT_WIDTH) / (num_players +1);
+  for (int i = 1; i <= num_players; i++) {
+    size_t platform_start_index = i * vert_seperation + (i - 1) * PLAYER_TERRAIN_VERT_WIDTH;
+    float platform_height = terrain->verts[platform_start_index + (PLAYER_TERRAIN_VERT_WIDTH >> 1)].y;
+
+    for (int p = 0; p < PLAYER_TERRAIN_VERT_WIDTH; p++) {
+      terrain->verts[platform_start_index + p].y = platform_height;
+    }
+  }
+
   return terrain;
 }

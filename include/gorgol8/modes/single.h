@@ -1,7 +1,7 @@
 #ifndef MODE_SINGLE_H
 #define MODE_SINGLE_H
 
-#include <enDJinn/enj_enDJinn.h>
+#include <enDjinn/enj_enDjinn.h>
 #include <gorgol8/game/terrain.h>
 
 typedef struct single_mode_s {

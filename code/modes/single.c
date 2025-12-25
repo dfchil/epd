@@ -22,7 +22,7 @@ void mode_single_regen(void) {
   }
   uint32_t secs, nsecs;
   timer_ns_gettime(&secs, &nsecs);
-  single_mode_data.terrain = terrain_generate(4, nsecs, 5.0f * ((rand() % 1000 / 1000.0f) + 0.5f));
+  single_mode_data.terrain = terrain_generate(8, nsecs, 5.0f * ((rand() % 1000 / 1000.0f) + 0.5f));
 }
 
 static void mode_single_updater(void* data) {

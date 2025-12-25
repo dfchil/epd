@@ -1,7 +1,7 @@
 #ifndef GAME_PLAYER_H
 #define GAME_PLAYER_H
 
-#include <enDJinn/enj_enDJinn.h>
+#include <enDjinn/enj_enDjinn.h>
 #include <sh4zam/shz_sh4zam.h>
 #include <stdint.h>
 

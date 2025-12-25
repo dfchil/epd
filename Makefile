@@ -1,1 +1,1 @@
-enDjinn/Makefile.core
+enDJinn/Makefile.prime

@@ -30,4 +30,6 @@ typedef struct game_player_s {
   enj_abstract_ctrlr_t controller;
 } game_player_t;
 
+void player_update(game_player_t* player);
+
 #endif  // GAME_PLAYER_H

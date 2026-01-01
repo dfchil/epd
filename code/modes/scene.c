@@ -1,38 +1,39 @@
 #include <enDjinn/enj_enDjinn.h>
-#include <gorgol8/modes/single.h>
+#include <gorgol8/modes/scene.h>
 #include <gorgol8/game/terrain.h>
 #include <gorgol8/render/terrain.h>
 
 #include <kos/timer.h>
 #include <stdlib.h>
 
-single_mode_t single_mode_data = {
+scene_t scene_data = {
     .terrain = NULL,
 };
 
-static enj_mode_t single = {
-    .name = "single",
+static enj_mode_t scene = {
+    .name = "scene mode",
     .name = "The main mode",
-    .pop_fun = NULL,
-    .data = &single_mode_data,
+    .on_activation_fn = NULL,
+    .data = &scene_data,
 };
-void mode_single_regen(void) {
-  if (single_mode_data.terrain) {
-    free(single_mode_data.terrain);
+scene_t* scene_construct(int num_players) {
+  if (scene_data.terrain) {
+    free(scene_data.terrain);
   }
   uint32_t secs, nsecs;
   timer_ns_gettime(&secs, &nsecs);
-  single_mode_data.terrain = terrain_generate(8, nsecs, 5.0f * ((rand() % 1000 / 1000.0f) + 0.5f));
+  scene_data.terrain = terrain_generate(8, nsecs, 5.0f * ((rand() % 1000 / 1000.0f) + 0.5f));
+  return &scene_data;
 }
 
 static void mode_single_updater(void* data) {
-  single_mode_t* mode_data = (single_mode_t*)data;
+  scene_t* mode_data = (scene_t*)data;
 
   enj_ctrlr_state_t ** ctrl_states = enj_ctrl_get_states();
   for (int i = 0; i < MAPLE_PORT_COUNT; i++) {
     if (ctrl_states[i] != NULL) {
       if (ctrl_states[i]->button.A == ENJ_BUTTON_DOWN_THIS_FRAME) {
-        mode_single_regen();
+        scene_construct(8);
       }
     }
   }
@@ -43,8 +44,7 @@ static void mode_single_updater(void* data) {
   }
 }
 
-
-enj_mode_t* mode_single_get(void) {
-  single.mode_updater = mode_single_updater;
-  return &single;
+enj_mode_t* scene_mode_get(void) {
+  scene.mode_updater = mode_single_updater;
+  return &scene;
 }

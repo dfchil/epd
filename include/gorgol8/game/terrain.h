@@ -11,6 +11,7 @@ typedef struct terrain_s {
   float max_y;
   int seed;
   float roughness;
+  shz_vec2_t player_positions[8];
 } terrain_t;
 
 terrain_t* terrain_generate(int num_players, int seed, float roughness);

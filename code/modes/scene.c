@@ -27,7 +27,7 @@ scene_t* scene_construct(int num_players) {
   return &scene_data;
 }
 
-static void mode_single_updater(void* data) {
+static void scene_updater(void* data) {
   scene_t* mode_data = (scene_t*)data;
 
   enj_ctrlr_state_t ** ctrl_states = enj_ctrl_get_states();
@@ -47,6 +47,6 @@ static void mode_single_updater(void* data) {
 }
 
 enj_mode_t* scene_mode_get(void) {
-  scene.mode_updater = mode_single_updater;
+  scene.mode_updater = scene_updater;
   return &scene;
 }

@@ -1,5 +1,6 @@
 #include <enDjinn/enj_enDjinn.h>
 #include <gorgol8/game/player.h>
+#include <gorgol8/modes/scene.h>
 #include <gorgol8/render/player.h>
 
 static void _render_player_OP(void* data) {

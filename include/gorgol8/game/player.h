@@ -28,6 +28,7 @@ typedef struct game_player_s {
   float barrel_length;
   int cooldown_timer;
   enj_abstract_ctrlr_t controller;
+  void *scene;
 } game_player_t;
 
 void player_update(game_player_t* player);

@@ -8,6 +8,7 @@
 
 scene_t scene_data = {
     .terrain = NULL,
+    .offset_x = 0,
 };
 
 static enj_mode_t scene = {
@@ -22,7 +23,7 @@ scene_t* scene_construct(int num_players) {
   }
   uint32_t secs, nsecs;
   timer_ns_gettime(&secs, &nsecs);
-  scene_data.terrain = terrain_generate(8, nsecs, 5.0f * ((rand() % 1000 / 1000.0f) + 0.5f));
+  scene_data.terrain = terrain_generate(8, nsecs, 5.0f * ((rand() % 1000 / 1000.0f) + 0.5f), 0.0f);
   return &scene_data;
 }
 
@@ -39,8 +40,9 @@ static void mode_single_updater(void* data) {
   }
 
   if (mode_data->terrain) {
-    enj_render_list_add(PVR_LIST_OP_POLY, render_terrain, mode_data->terrain);
-    enj_render_list_add(PVR_LIST_PT_POLY, render_terrain_stats, mode_data->terrain);
+    render_terrain(mode_data);
+    // enj_render_list_add(PVR_LIST_OP_POLY, render_terrain, mode_data->terrain);
+    enj_render_list_add(PVR_LIST_PT_POLY, render_terrain_stats, mode_data);
   }
 }
 

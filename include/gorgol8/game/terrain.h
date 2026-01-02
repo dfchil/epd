@@ -14,5 +14,5 @@ typedef struct terrain_s {
   shz_vec2_t player_positions[8];
 } terrain_t;
 
-terrain_t* terrain_generate(int num_players, int seed, float roughness);
+terrain_t* terrain_generate(int num_players, int seed, float roughness, float prev_last_y);
 #endif

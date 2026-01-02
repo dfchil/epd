@@ -3,6 +3,7 @@
 
 #include <enDjinn/enj_enDjinn.h>
 #include <gorgol8/game/terrain.h>
+#include <gorgol8/types.h>
 #include <gorgol8/game/player.h>
 
 typedef struct single_mode_s {

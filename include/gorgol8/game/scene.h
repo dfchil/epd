@@ -15,6 +15,6 @@ typedef struct single_mode_s {
 void scene_updater(void* data);
 void scene_demolish(scene_t* scene);
 
-scene_t* scene_construct(int num_players);
+scene_t* scene_construct(int num_players, scene_t* prev_scene);
 
 #endif // MODE_SCENE_H

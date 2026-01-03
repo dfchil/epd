@@ -5,7 +5,5 @@
 #include <gorgol8/game/scene.h>
 
 void render_terrain(scene_t* scene);
-void render_terrain_stats(void *data);
-
 
 #endif // RENDER_TERRAIN_H

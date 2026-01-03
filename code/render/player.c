@@ -5,7 +5,6 @@
 
 static void _render_player_OP(void* data) {
   game_player_t* player = (game_player_t*)data;
-  scene_t* a_scene = (scene_t*)player->scene;
 
   pvr_dr_state_t state;
   pvr_dr_init(&state);
@@ -17,9 +16,8 @@ static void _render_player_OP(void* data) {
   hdr->argb = player->color.raw;
   pvr_dr_commit(hdr);
 
-  // float offset_x = (float)a_scene->offset_x * ENJ_XSCALE;
-  float offset_x = 0.0f;
-
+  float offset_x = (float)((scene_t*)player->scene)->offset_x * ENJ_XSCALE;
+  
   enj_draw_sprite(
       (float[4][3]){
           {player->position.x + offset_x - 4.0f * ENJ_XSCALE,

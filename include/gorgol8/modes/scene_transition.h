@@ -1,5 +1,5 @@
-#ifndef SCENE_TRANSITION_H
-#define SCENE_TRANSITION_H
+#ifndef MODE_SCENE_TRANSITION_H
+#define MODE_SCENE_TRANSITION_H
 
 #include <enDjinn/enj_enDjinn.h>
 
@@ -13,4 +13,4 @@ void scene_transition_updater(void* data);
 
 enj_mode_t* scene_transition_get(void);
 
-#endif // SCENE_TRANSITION_H
+#endif // MODE_SCENE_TRANSITION_H

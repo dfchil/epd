@@ -3,33 +3,6 @@
 #include <gorgol8/render/primitives.h>
 #include <gorgol8/game/scene.h>
 
-void render_terrain_stats(void* data) {
-  scene_t* a_scene = (scene_t*)data;
-  terrain_t* terrain = a_scene->terrain;
-
-  enj_qfont_color_set(0xff, 0, 0);  // red color
-
-  int xpos = 10 + a_scene->offset_x;
-  int ypos = 10;
-
-  char buffer[128];
-
-  snprintf(buffer, sizeof(buffer), "Terrain Vertices: %zu", terrain->num_verts);
-  ypos += enj_qfont_get_header()->line_height;
-  enj_qfont_write(buffer, xpos, ypos, PVR_LIST_PT_POLY);
-  ypos += enj_qfont_get_header()->line_height;
-  snprintf(buffer, sizeof(buffer), "Min Y: %.2f", terrain->min_y);
-  ypos += enj_qfont_get_header()->line_height;
-  enj_qfont_write(buffer, xpos, ypos, PVR_LIST_PT_POLY);
-  snprintf(buffer, sizeof(buffer), "Max Y: %.2f", terrain->max_y);
-  ypos += enj_qfont_get_header()->line_height;
-  enj_qfont_write(buffer, xpos, ypos, PVR_LIST_PT_POLY);
-  snprintf(buffer, sizeof(buffer), "Roughness: %.2f", terrain->roughness);
-  ypos += enj_qfont_get_header()->line_height;
-  enj_qfont_write(buffer, xpos, ypos, PVR_LIST_PT_POLY);
-}
-
-
 void _render_terrain_OP(void* data) {
   scene_t* a_scene = (scene_t*)data;
   terrain_t* terrain = a_scene->terrain;

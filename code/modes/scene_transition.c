@@ -1,4 +1,4 @@
-// #include <gorgol8/modes/scene.h>
+// #include <gorgol8/game/scene.h>
 // #include <gorgol8/modes/scene_transition.h>
 // #include <gorgol8/render/scene.h>
 

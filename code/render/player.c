@@ -1,12 +1,12 @@
 #include <enDjinn/enj_enDjinn.h>
 #include <gorgol8/game/player.h>
-#include <gorgol8/modes/scene.h>
+#include <gorgol8/game/scene.h>
 #include <gorgol8/render/player.h>
 
 static void _render_player_OP(void* data) {
-  // scene_t* a_scene = scene_get_active();
-
   game_player_t* player = (game_player_t*)data;
+  scene_t* a_scene = (scene_t*)player->scene;
+
   pvr_dr_state_t state;
   pvr_dr_init(&state);
 

@@ -1,5 +1,5 @@
-#ifndef MODE_SINGLE_H
-#define MODE_SINGLE_H
+#ifndef MODE_SCENE_H
+#define MODE_SCENE_H
 
 #include <enDjinn/enj_enDjinn.h>
 #include <gorgol8/game/terrain.h>
@@ -12,12 +12,9 @@ typedef struct single_mode_s {
   int offset_x;
 } scene_t;
 
+void scene_updater(void* data);
 void scene_demolish(scene_t* scene);
 
 scene_t* scene_construct(int num_players);
 
-
-enj_mode_t* scene_mode_get(void); 
-
-
-#endif // MODE_SINGLE_H
+#endif // MODE_SCENE_H

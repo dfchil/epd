@@ -30,10 +30,8 @@ static void subdivide(terrain_t* terrain, size_t offset_left,
 
 #define PLAYER_TERRAIN_VERT_WIDTH 5
 
-terrain_t* terrain_generate(int num_players, int seed, float roughness,
+terrain_t* terrain_generate(int num_players, float roughness,
                             float prev_last_y) {
-  srand(seed);
-
   size_t num_verts = vid_mode->width >> 2;  // one vertex every 4 pixels
   terrain_t* terrain =
       memalign(32, sizeof(terrain_t) + sizeof(shz_vec2_t) * num_verts);
@@ -48,7 +46,6 @@ terrain_t* terrain_generate(int num_players, int seed, float roughness,
 
   terrain->min_y = (vid_mode->height >> 7);
   terrain->max_y = (vid_mode->height >> 4) * 11;
-  terrain->seed = seed;
   terrain->roughness = roughness;
 
   terrain->num_verts = num_verts;

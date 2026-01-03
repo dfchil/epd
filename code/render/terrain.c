@@ -1,7 +1,7 @@
 #include <enDjinn/enj_enDjinn.h>
 #include <gorgol8/game/terrain.h>
 #include <gorgol8/render/primitives.h>
-#include <gorgol8/modes/scene.h>
+#include <gorgol8/game/scene.h>
 
 void render_terrain_stats(void* data) {
   scene_t* a_scene = (scene_t*)data;
@@ -22,9 +22,6 @@ void render_terrain_stats(void* data) {
   ypos += enj_qfont_get_header()->line_height;
   enj_qfont_write(buffer, xpos, ypos, PVR_LIST_PT_POLY);
   snprintf(buffer, sizeof(buffer), "Max Y: %.2f", terrain->max_y);
-  ypos += enj_qfont_get_header()->line_height;
-  enj_qfont_write(buffer, xpos, ypos, PVR_LIST_PT_POLY);
-  snprintf(buffer, sizeof(buffer), "Seed: %d", terrain->seed);
   ypos += enj_qfont_get_header()->line_height;
   enj_qfont_write(buffer, xpos, ypos, PVR_LIST_PT_POLY);
   snprintf(buffer, sizeof(buffer), "Roughness: %.2f", terrain->roughness);

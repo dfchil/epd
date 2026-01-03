@@ -1,24 +1,25 @@
 {
-	// Use IntelliSense to learn about possible attributes.
-	// Hover to view descriptions of existing attributes.
-	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "BBA_LAN",
-			"type": "cppdbg",
-			"request": "launch",
-			"preLaunchTask": "Build",
-			"cwd": "${workspaceFolder}",
-			"program": "${workspaceFolder}/bin/gorgol8.elf",
-			"MIMode": "gdb",
-			"miDebuggerPath": "/opt/toolchains/dc/sh-elf/bin/sh-elf-gdb",
-			"miDebuggerServerAddress": "localhost:2159", //common misconception: we connect to the gdb server offered by dc-tool-ip, NOT to the Dreamcast directly !
-			"debugServerPath": "/opt/toolchains/dc/bin/dc-tool-ip",
-			"debugServerArgs": "-g -t 192.168.2.7 -x ${workspaceFolder}/bin/gorgol8.elf",
-			"externalConsole": false,
-			"avoidWindowsConsoleRedirection": false,
-			"internalConsoleOptions": "openOnSessionStart"
-		},
-	]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "BBA_LAN",
+      "type": "cppdbg",
+      "request": "launch",
+      "preLaunchTask": "Build",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/bin/gorgol8.elf",
+      "MIMode": "gdb",
+      "miDebuggerPath": "/opt/toolchains/dc/sh-elf/bin/sh-elf-gdb",
+      "miDebuggerServerAddress": "localhost:2159", //common misconception: we connect to the gdb server offered by dc-tool-ip, NOT to the Dreamcast directly !
+      "debugServerPath": "/opt/toolchains/dc/bin/dc-tool-ip",
+      // "debugServerArgs": "-g -t 192.168.2.7 -x ${workspaceFolder}/bin/gorgol8.elf",
+      "debugServerArgs": "-g -t 10.0.0.248 -x ${workspaceFolder}/bin/gorgol8.elf",
+      "externalConsole": false,
+      "avoidWindowsConsoleRedirection": false,
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+  ]
 }

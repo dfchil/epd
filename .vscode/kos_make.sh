@@ -4,7 +4,7 @@
 #set the KOS environtment variables
 source /opt/toolchains/dc/kos/environ.sh
 
-TARGET=gorgol8.elf
+TARGET=mortarlity.elf
 
 DCTRACE=1 ENJ_DEBUG=1 make clean
 # SINGLEDEMO=0 DCPROF=1 SINGLEDEMO=7 

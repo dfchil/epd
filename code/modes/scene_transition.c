@@ -2,7 +2,7 @@
 #include <mortarlity/modes/scene_transition.h>
 #include <mortarlity/render/scene.h>
 
-#define CS_PIXELS_PER_STEP 3
+#define CS_PIXELS_PER_STEP 10
 
 alignas(32) static scene_transition_mode_t s_change_scene_mode = {0};
 void scene_transition_updater(void* data) {

@@ -32,6 +32,8 @@ static void subdivide(terrain_t* terrain, size_t offset_left,
 
 terrain_t* terrain_generate(int num_players, float roughness,
                             float prev_last_y) {
+  printf("Generating terrain for %d players with roughness %f\n",
+         num_players, roughness);
   size_t num_verts = vid_mode->width >> 2;  // one vertex every 4 pixels
   terrain_t* terrain =
       memalign(32, sizeof(terrain_t) + sizeof(shz_vec2_t) * num_verts);

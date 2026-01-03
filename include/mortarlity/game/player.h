@@ -9,13 +9,13 @@ typedef struct game_player_s {
   shz_vec2_t position;
   uint16_t health;
   enj_color_t color;
-  float barrel_angle;
-  float barrel_length;
+  float shoot_angle;
+  float shoot_power;
   int cooldown_timer;
   enj_abstract_ctrlr_t controller;
   void *scene;
 } game_player_t;
 
-void player_update(game_player_t* player);
+int player_update(game_player_t* player);
 
 #endif  // GAME_PLAYER_H

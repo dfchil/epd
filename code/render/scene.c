@@ -1,6 +1,6 @@
-#include <gorgol8/render/scene.h> 
-#include <gorgol8/render/terrain.h>
-#include <gorgol8/render/player.h>
+#include <mortarlity/render/scene.h> 
+#include <mortarlity/render/terrain.h>
+#include <mortarlity/render/player.h>
 
 void render_scene(scene_t *scene) {
   if (scene->terrain) {

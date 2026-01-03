@@ -1,5 +1,5 @@
 #include <enDjinn/enj_enDjinn.h>
-#include <gorgol8/game/scene.h>
+#include <mortarlity/game/scene.h>
 
 int main(__unused int argc, __unused char** argv) {
   enj_state_init_defaults();

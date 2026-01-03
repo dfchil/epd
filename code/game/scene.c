@@ -1,9 +1,9 @@
 #include <enDjinn/enj_enDjinn.h>
-#include <gorgol8/game/scene.h>
-#include <gorgol8/game/terrain.h>
-#include <gorgol8/render/terrain.h>
-#include <gorgol8/render/scene.h>
-#include <gorgol8/modes/scene_transition.h>
+#include <mortarlity/game/scene.h>
+#include <mortarlity/game/terrain.h>
+#include <mortarlity/render/terrain.h>
+#include <mortarlity/render/scene.h>
+#include <mortarlity/modes/scene_transition.h>
 
 #include <kos/timer.h>
 #include <stdlib.h>

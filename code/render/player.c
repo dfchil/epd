@@ -1,7 +1,7 @@
 #include <enDjinn/enj_enDjinn.h>
-#include <gorgol8/game/player.h>
-#include <gorgol8/game/scene.h>
-#include <gorgol8/render/player.h>
+#include <mortarlity/game/player.h>
+#include <mortarlity/game/scene.h>
+#include <mortarlity/render/player.h>
 
 static void _render_player_OP(void* data) {
   game_player_t* player = (game_player_t*)data;

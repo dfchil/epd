@@ -1,6 +1,6 @@
-#include <gorgol8/game/scene.h>
-#include <gorgol8/modes/scene_transition.h>
-#include <gorgol8/render/scene.h>
+#include <mortarlity/game/scene.h>
+#include <mortarlity/modes/scene_transition.h>
+#include <mortarlity/render/scene.h>
 
 #define CS_PIXELS_PER_STEP 3
 

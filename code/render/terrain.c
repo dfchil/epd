@@ -1,7 +1,7 @@
 #include <enDjinn/enj_enDjinn.h>
-#include <gorgol8/game/terrain.h>
-#include <gorgol8/render/primitives.h>
-#include <gorgol8/game/scene.h>
+#include <mortarlity/game/terrain.h>
+#include <mortarlity/render/primitives.h>
+#include <mortarlity/game/scene.h>
 
 void _render_terrain_OP(void* data) {
   scene_t* a_scene = (scene_t*)data;

@@ -2,8 +2,8 @@
 #define MODE_SCENE_H
 
 #include <enDjinn/enj_enDjinn.h>
-#include <gorgol8/game/terrain.h>
-#include <gorgol8/game/player.h>
+#include <mortarlity/game/terrain.h>
+#include <mortarlity/game/player.h>
 
 typedef struct single_mode_s {
   terrain_t *terrain;

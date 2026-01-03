@@ -1,7 +1,7 @@
 
 #include <dc/video.h>
 #include <enDjinn/enj_enDjinn.h>
-#include <gorgol8/game/terrain.h>
+#include <mortarlity/game/terrain.h>
 #include <malloc.h>
 #include <sh4zam/shz_sh4zam.h>
 #include <stdlib.h>

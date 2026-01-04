@@ -41,7 +41,7 @@ terrain_t* terrain_generate(int num_players, float roughness,
     return NULL;
   }
   terrain->verts = (shz_vec2_t*)(terrain + 1);
-  float x_step = (float)(vid_mode->width * ENJ_XSCALE) / (float)(num_verts - 1);
+  float x_step = (float)(vid_mode->width) / (float)(num_verts - 1);
   for (size_t i = 0; i < num_verts; i++) {
     terrain->verts[i].x = x_step * (float)i;
   }
@@ -57,7 +57,7 @@ terrain_t* terrain_generate(int num_players, float roughness,
       terrain->min_y +
       (float)(rand() % (int)(terrain->max_y - terrain->min_y) >> 1);
 
-  terrain->verts[num_verts - 1].x = (float)vid_mode->width * ENJ_XSCALE;
+  terrain->verts[num_verts - 1].x = (float)vid_mode->width;
   subdivide(terrain, 0, terrain->num_verts - 1, roughness);
 
   // make small flat section for each player start

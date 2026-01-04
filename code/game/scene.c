@@ -9,20 +9,6 @@
 #include <malloc.h>
 #include <stdlib.h>
 
-static enj_color_t _player_colors[] = {
-    {.raw = 0xff14a5ff}, // blue
-    {.raw = 0xffffc010}, // light orange/gold
-    {.raw = 0xffff450a}, // red
-    {.raw = 0xff0fff50}, // neon green
-    {.raw = 0xff9c27ff}, // Purple
-    {.raw = 0xffc9c0bb}, // silver
-    {.raw = 0xffff6ec7}, // neon pink
-    {.raw = 0xff009b7d}, // teal
-};
-#define NUM_PLAYER_COLORS (sizeof(_player_colors) / sizeof(enj_color_t))
-
-// static const char* _color_names[NUM_PLAYER_COLORS] = {
-//     "BLUE", "GOLD", "RED ", "GREEN", "PURPLE", "SILVER", "PINK", "TEAL"};
 
 void scene_demolish(scene_t *scene) {
   if (scene) {
@@ -58,21 +44,13 @@ scene_t *scene_construct(int num_players, scene_t *prev_scene) {
 
   // randomize start positions
   for (int i = 0; i < num_players; i++) {
-    int frompos = rand() % (num_players - i);
-    shz_vec2_t pos = new_scene->terrain->player_positions[i];
-    new_scene->terrain->player_positions[i] =
-        new_scene->terrain->player_positions[frompos + i];
-    new_scene->terrain->player_positions[frompos + i] = pos;
+    // int frompos = rand() % (num_players - i);
+    // shz_vec2_t pos = new_scene->terrain->player_positions[i];
+    // new_scene->terrain->player_positions[i] =
+    //     new_scene->terrain->player_positions[frompos + i];
+    // new_scene->terrain->player_positions[frompos + i] = pos;
 
-    new_scene->players[i].position = new_scene->terrain->player_positions[i];
-    new_scene->players[i].health = 100;
-    new_scene->players[i].color = _player_colors[i % NUM_PLAYER_COLORS];
-    new_scene->players[i].shoot_angle = 0.0f;
-    new_scene->players[i].shoot_power = 20.0f;
-    new_scene->players[i].cooldown_timer = 0;
-    new_scene->players[i].controller.port = i;
-    new_scene->players[i].controller.type = 0;
-    new_scene->players[i].scene = new_scene;
+    player_initialize(i, new_scene);
   }
   return new_scene;
 }

@@ -16,6 +16,10 @@ typedef struct game_player_s {
   void *scene;
 } game_player_t;
 
-int player_update(game_player_t* player);
+void player_initialize(int player_index, void *scene);
+
+int player_update(game_player_t *player);
+
+enj_color_t player_color_get(int player_index);
 
 #endif  // GAME_PLAYER_H

@@ -5,6 +5,10 @@
 #include <sh4zam/shz_sh4zam.h>
 #include <stdint.h>
 
+#define MAX_SHOOT_POWER 20.0f
+#define MIN_SHOOT_POWER 1.0f
+#define SHOT_COOLDOWN_FRAMES 300
+
 typedef struct game_player_s {
   shz_vec2_t position;
   uint16_t health;

@@ -4,3 +4,5 @@
 
 
 #endif // MODE_TITLE_SCREEN_H
+
+void title_screen_updater(__unused void *data);

@@ -41,6 +41,8 @@ scene_t *scene_construct(int num_players, scene_t *prev_scene) {
   new_scene->terrain = terrain_generate(
       num_players, 5.0f * ((rand() % 1000 / 1000.0f) + 0.3f), prev_last_y);
 
+  enj_ctrlr_state_t** cstates = enj_ctrl_get_states();
+
   // randomize start positions
   for (int i = 0; i < num_players; i++) {
     int frompos = rand() % (num_players - i);
@@ -48,8 +50,14 @@ scene_t *scene_construct(int num_players, scene_t *prev_scene) {
     new_scene->terrain->player_positions[i] =
         new_scene->terrain->player_positions[frompos + i];
     new_scene->terrain->player_positions[frompos + i] = pos;
-
     player_initialize(i, new_scene);
+
+    if (cstates[i] != NULL) {
+      new_scene->players[i].controller.updatefun = enj_read_dreamcast_controller;
+      new_scene->players[i].controller.state =
+          &(new_scene->players[i].controller);
+      new_scene->players[i].controller.port = i;
+    }
   }
   return new_scene;
 }

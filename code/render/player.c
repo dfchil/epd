@@ -63,7 +63,7 @@ static inline void _render_trajectory(game_player_t *player) {
   float power_scale = player->shoot_power * 10.0f;
 
   shz_vec2_t points[num_trajectory_points];
-  float time_step = 0.1f;
+  float time_step = 0.5f;
   for (int i = 0; i < num_trajectory_points; i++) {
     float t = time_step * (float)i;
     points[i] = (shz_vec2_t){

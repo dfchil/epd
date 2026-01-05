@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #define MAX_SHOOT_POWER 20.0f
-#define MIN_SHOOT_POWER 1.0f
+#define MIN_SHOOT_POWER 3.0f
 #define SHOT_COOLDOWN_FRAMES 300
 
 typedef struct game_player_s {

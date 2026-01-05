@@ -1,14 +1,14 @@
 
 #include <dc/video.h>
 #include <enDjinn/enj_enDjinn.h>
-#include <mortarlity/game/terrain.h>
 #include <malloc.h>
+#include <mortarlity/game/terrain.h>
 #include <sh4zam/shz_sh4zam.h>
 #include <stdlib.h>
 
-static void subdivide(terrain_t* terrain, size_t offset_left,
+static void subdivide(terrain_t *terrain, size_t offset_left,
                       size_t offset_right, float roughness) {
-  shz_vec2_t* verts = terrain->verts;
+  shz_vec2_t *verts = terrain->verts;
   if (offset_left + 1 >= offset_right) {
     return;
   }
@@ -30,17 +30,17 @@ static void subdivide(terrain_t* terrain, size_t offset_left,
 
 #define PLAYER_TERRAIN_VERT_WIDTH 5
 
-terrain_t* terrain_generate(int num_players, float roughness,
+terrain_t *terrain_generate(int num_players, float roughness,
                             float prev_last_y) {
-  printf("Generating terrain for %d players with roughness %f\n",
-         num_players, roughness);
-  size_t num_verts = vid_mode->width >> 2;  // one vertex every 4 pixels
-  terrain_t* terrain =
-      memalign(32, sizeof(terrain_t) + sizeof(shz_vec2_t) * num_verts);
+  printf("Generating terrain for %d players with roughness %f\n", num_players,
+         roughness);
+  size_t num_verts = vid_mode->width >> 2; // one vertex every 4 pixels
+  terrain_t *terrain =
+      memalign(32, sizeof(terrain_t) + sizeof(shz_vec2_t) * (num_verts + 1));
   if (!terrain) {
     return NULL;
   }
-  terrain->verts = (shz_vec2_t*)(terrain + 1);
+  terrain->verts = (shz_vec2_t *)(terrain + 1);
   float x_step = (float)(vid_mode->width) / (float)(num_verts - 1);
   for (size_t i = 0; i < num_verts; i++) {
     terrain->verts[i].x = x_step * (float)i;
@@ -59,6 +59,8 @@ terrain_t* terrain_generate(int num_players, float roughness,
 
   terrain->verts[num_verts - 1].x = (float)vid_mode->width;
   subdivide(terrain, 0, terrain->num_verts - 1, roughness);
+  terrain->verts[num_verts] = (shz_vec2_t){
+      .x = (float)vid_mode->width + 1, .y = terrain->verts[num_verts - 1].y};
 
   // make small flat section for each player start
   int vert_seperation =

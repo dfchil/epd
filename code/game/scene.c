@@ -9,7 +9,6 @@
 #include <malloc.h>
 #include <stdlib.h>
 
-
 void scene_demolish(scene_t *scene) {
   if (scene) {
     if (scene->terrain) {
@@ -44,11 +43,11 @@ scene_t *scene_construct(int num_players, scene_t *prev_scene) {
 
   // randomize start positions
   for (int i = 0; i < num_players; i++) {
-    // int frompos = rand() % (num_players - i);
-    // shz_vec2_t pos = new_scene->terrain->player_positions[i];
-    // new_scene->terrain->player_positions[i] =
-    //     new_scene->terrain->player_positions[frompos + i];
-    // new_scene->terrain->player_positions[frompos + i] = pos;
+    int frompos = rand() % (num_players - i);
+    shz_vec2_t pos = new_scene->terrain->player_positions[i];
+    new_scene->terrain->player_positions[i] =
+        new_scene->terrain->player_positions[frompos + i];
+    new_scene->terrain->player_positions[frompos + i] = pos;
 
     player_initialize(i, new_scene);
   }
@@ -60,8 +59,10 @@ static inline void _next_scene(scene_t *current_scene) {
   scene_transition_mode_t *cs_mode_data =
       (scene_transition_mode_t *)cs_mode->data;
   cs_mode_data->prev_scene = current_scene;
-  cs_mode_data->next_scene = scene_construct(current_scene->num_players, current_scene);
-  ((scene_t *)cs_mode_data->next_scene)->offset_x = vid_mode->width;
+  scene_t *next_scene =
+      scene_construct(current_scene->num_players, current_scene);
+  next_scene->offset_x = vid_mode->width;
+  cs_mode_data->next_scene = next_scene;
   enj_mode_push(cs_mode);
   enj_mode_get()->mode_updater(enj_mode_get()->data);
 }

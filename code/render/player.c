@@ -32,7 +32,7 @@ static void _render_player_TR(void *data) {
   enj_color_t arrow_color = player->color;
   arrow_color.a = 0xAf;
 
-  float offset_x = (float)((scene_t *)player->scene)->offset_x;
+  float offset_x = (float)((scene_t *)player->scene)->offset_x - 0.5f;
   const shz_sincos_t barrel = shz_sincosf(player->shoot_angle + 1.5708f);
 
   const float arrow_scale = 1.5f;
@@ -40,7 +40,7 @@ static void _render_player_TR(void *data) {
   shz_vec2_t rotated_verices[8];
   for (int i = 0; i < 8; i++) {
     rotated_verices[i] = (shz_vec2_t){
-        .x = offset_x + player->position.x +
+        .x = player->position.x +
              arrow_scale * (arrow_vertices[i].x * barrel.cos -
                             arrow_scale * arrow_vertices[i].y * barrel.sin),
         .y = (player->position.y +
@@ -48,8 +48,9 @@ static void _render_player_TR(void *data) {
                              arrow_scale * arrow_vertices[i].y * barrel.cos)),
     };
   }
-  render_strip_line(rotated_verices, 8, 1.5f, 1.5f, arrow_color,
-                    PVR_LIST_TR_POLY);
+  render_strip_line(rotated_verices, 8,
+                    &(shz_vec3_t){.x = offset_x, .y = 0.0f, .z = 1.0f}, 1.5f,
+                    arrow_color, PVR_LIST_TR_POLY);
 }
 
 static void _render_player_OP(void *data) {

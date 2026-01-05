@@ -16,7 +16,7 @@ void render_sprite_line(shz_vec2_t from, shz_vec2_t to, float zvalue,
   enj_draw_sprite(corners, state_ptr, NULL, NULL);
 }
 
-void render_strip_line(shz_vec2_t *points, int point_count, float zvalue,
+void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
                        float line_width, enj_color_t color, pvr_list_t list) {
 
   pvr_dr_state_t state;
@@ -33,59 +33,65 @@ void render_strip_line(shz_vec2_t *points, int point_count, float zvalue,
 
   pvr_vertex_t *vert = (pvr_vertex_t *)pvr_dr_target(state);
   vert->flags = PVR_CMD_VERTEX;
-  vert->x = (points[0].x - v0.y * line_width * 0.5f) * ENJ_XSCALE;
-  vert->y = vid_mode->height - (points[0].y + v0.x * line_width * 0.5f);
-  vert->z = zvalue;
+  vert->x = (offset->x + points[0].x - v0.y * line_width * 0.5f) * ENJ_XSCALE;
+  vert->y =
+      (offset->y + vid_mode->height - (points[0].y + v0.x * line_width * 0.5f));
+  vert->z = offset->z;
   vert->argb = color.raw;
   pvr_dr_commit(vert);
 
   vert = (pvr_vertex_t *)pvr_dr_target(state);
   vert->flags = PVR_CMD_VERTEX;
-  vert->x = (points[0].x + v0.y * line_width * 0.5f) * ENJ_XSCALE;
-  vert->y = vid_mode->height - (points[0].y - v0.x * line_width * 0.5f);
-  vert->z = zvalue;
+  vert->x = (offset->x + points[0].x + v0.y * line_width * 0.5f) * ENJ_XSCALE;
+  vert->y =
+      offset->y + vid_mode->height - (points[0].y - v0.x * line_width * 0.5f);
+  vert->z = offset->z;
   vert->argb = color.raw;
   pvr_dr_commit(vert);
 
-  for (int i = 0; i < point_count - 1; i++) {
+  for (int i = 0; i < point_count - 2; i++) {
     shz_vec2_t v1 =
         shz_vec2_normalize(shz_vec2_sub(points[i + 2], points[i + 1]));
     shz_vec2_t bisector = shz_vec2_scale(
         shz_vec2_normalize(shz_vec2_add(v0, v1)), line_width * 0.5f);
 
     vert = (pvr_vertex_t *)pvr_dr_target(state);
-    vert->flags = PVR_CMD_VERTEX;
-    vert->x = (points[i + 1].x - bisector.y) * ENJ_XSCALE;
-    vert->y = vid_mode->height - (points[i + 1].y + bisector.x);
-    vert->z = zvalue;
-    vert->argb = color.raw;
+    // vert->flags = PVR_CMD_VERTEX;
+    vert->x = (offset->x + points[i + 1].x - bisector.y) * ENJ_XSCALE;
+    vert->y = offset->y + vid_mode->height - (points[i + 1].y + bisector.x);
+    vert->z = offset->z;
+    // vert->argb = color.raw;
     pvr_dr_commit(vert);
 
     vert = (pvr_vertex_t *)pvr_dr_target(state);
-    vert->flags = PVR_CMD_VERTEX;
-    vert->x = (points[i + 1].x + bisector.y) * ENJ_XSCALE;
-    vert->y = vid_mode->height - (points[i + 1].y - bisector.x);
-    vert->z = zvalue;
-    vert->argb = color.raw;
+    // vert->flags = PVR_CMD_VERTEX;
+    vert->x = (offset->x + points[i + 1].x + bisector.y) * ENJ_XSCALE;
+    vert->y = offset->y + vid_mode->height - (points[i + 1].y - bisector.x);
+    vert->z = offset->z;
+    // vert->argb = color.raw;
     pvr_dr_commit(vert);
 
     v0 = v1;
   }
 
   vert = (pvr_vertex_t *)pvr_dr_target(state);
-  vert->flags = PVR_CMD_VERTEX;
-  vert->x = (points[point_count - 1].x - v0.y * line_width * 0.5f) * ENJ_XSCALE;
-  vert->y = vid_mode->height - (points[point_count - 1].y + v0.x * line_width * 0.5f);
-  vert->z = zvalue;
-  vert->argb = color.raw;
+  // vert->flags = PVR_CMD_VERTEX;
+  vert->x = (offset->x + points[point_count - 1].x - v0.y * line_width * 0.5f) *
+            ENJ_XSCALE;
+  vert->y = (offset->y + vid_mode->height -
+             (points[point_count - 1].y + v0.x * line_width * 0.5f));
+  vert->z = offset->z;
+  // vert->argb = color.raw;
   pvr_dr_commit(vert);
 
   vert = (pvr_vertex_t *)pvr_dr_target(state);
   vert->flags = PVR_CMD_VERTEX_EOL;
-  vert->x = (points[point_count - 1].x + v0.y * line_width * 0.5f) * ENJ_XSCALE;
-  vert->y = vid_mode->height - (points[point_count - 1].y - v0.x * line_width * 0.5f);
-  vert->z = zvalue;
-  vert->argb = color.raw;
+  vert->x = (offset->x + points[point_count - 1].x + v0.y * line_width * 0.5f) *
+            ENJ_XSCALE;
+  vert->y = (offset->y + vid_mode->height -
+             (points[point_count - 1].y - v0.x * line_width * 0.5f));
+  vert->z = offset->z;
+  // vert->argb = color.raw;
   pvr_dr_commit(vert);
 
   pvr_dr_finish();

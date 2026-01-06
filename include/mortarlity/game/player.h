@@ -7,7 +7,7 @@
 
 #define MAX_SHOOT_POWER 20.0f
 #define MIN_SHOOT_POWER 3.0f
-#define SHOT_COOLDOWN_FRAMES 300
+#define SHOT_COOLDOWN_FRAMES 150
 
 typedef struct game_player_s {
   shz_vec2_t position;
@@ -18,6 +18,7 @@ typedef struct game_player_s {
   int cooldown_timer;
   enj_abstract_ctrlr_t controller;
   void *scene;
+  shz_vec2_t arrow_vertices[8];
 } game_player_t;
 
 void player_initialize(int player_index, void *scene);

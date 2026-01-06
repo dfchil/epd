@@ -80,7 +80,7 @@ void scene_updater(void *data) {
   enj_ctrlr_state_t **ctrl_states = enj_ctrl_get_states();
   for (int i = 0; i < MAPLE_PORT_COUNT; i++) {
     if (ctrl_states[i] != NULL) {
-      if (ctrl_states[i]->button.A == ENJ_BUTTON_DOWN_THIS_FRAME) {
+      if (ctrl_states[i]->button.Y == ENJ_BUTTON_DOWN_THIS_FRAME) {
         _next_scene(scene);
         return;
       }

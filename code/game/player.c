@@ -35,7 +35,7 @@ void player_initialize(int player_index, void *scene) {
                       (NUM_PLAYER_COLORS - 1); // point in different directions
   player->shoot_power = (MAX_SHOOT_POWER - MIN_SHOOT_POWER) * 0.5f +
                         MIN_SHOOT_POWER;
-  player->cooldown_timer = 0;
+  player->cooldown_timer = SHOT_COOLDOWN_FRAMES;
   player->scene = scene;
   player->controller.updatefun = NULL;
   player->controller.state = NULL;

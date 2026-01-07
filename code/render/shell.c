@@ -16,18 +16,18 @@ void _render_shell_TR(void* data) {
   hdr_s.argb = shell_color.raw;
 
   float offset_x = (float)((scene_t*)shell->origin->scene)->offset_x;
-  enj_draw_sprite(
-      (float[4][3]){
-          {(shell->position.x + offset_x - 2.0f) * ENJ_XSCALE,
-           vid_mode->height - shell->position.y - 2.0f, 1.0f},
-          {(shell->position.x + offset_x + 2.0f) * ENJ_XSCALE,
-           vid_mode->height - shell->position.y - 2.0f, 1.0f},
-          {(shell->position.x + offset_x + 2.0f) * ENJ_XSCALE,
-           vid_mode->height - shell->position.y + 2.0f, 1.0f},
-          {(shell->position.x + offset_x - 2.0f) * ENJ_XSCALE,
-           vid_mode->height - shell->position.y + 2.0f, 1.0f},
-      },
-      &state, &hdr_s, NULL);
+  // enj_draw_sprite(
+  //     (float[4][3]){
+  //         {(shell->position.x + offset_x - 2.0f) * ENJ_XSCALE,
+  //          vid_mode->height - shell->position.y - 2.0f, 1.0f},
+  //         {(shell->position.x + offset_x + 2.0f) * ENJ_XSCALE,
+  //          vid_mode->height - shell->position.y - 2.0f, 1.0f},
+  //         {(shell->position.x + offset_x + 2.0f) * ENJ_XSCALE,
+  //          vid_mode->height - shell->position.y + 2.0f, 1.0f},
+  //         {(shell->position.x + offset_x - 2.0f) * ENJ_XSCALE,
+  //          vid_mode->height - shell->position.y + 2.0f, 1.0f},
+  //     },
+  //     &state, &hdr_s, NULL);
 
   pvr_poly_cxt_t cxt_poly;
   pvr_poly_cxt_col(&cxt_poly, PVR_LIST_TR_POLY);
@@ -36,27 +36,29 @@ void _render_shell_TR(void* data) {
   pvr_poly_compile(hdr_pp, &cxt_poly);
   pvr_dr_commit(hdr_pp);
 
+  #define SHELL_TRAIL_WIDTH 2.0f
   for (int i = 0; i < SHELL_MOTION_BLUR_STEPS - 1; i++) {
-    shell_color.a = (uint8_t)((float)i * (127.0f / SHELL_MOTION_BLUR_STEPS));
+    shell_color.a = (uint8_t)((float)i);
     int sprite_pos = (i + shell->frame) % SHELL_MOTION_BLUR_STEPS;
     shz_vec2_t* from = shell->trail + sprite_pos;
     shz_vec2_t* to =
         shell->trail + ((sprite_pos + 1) % SHELL_MOTION_BLUR_STEPS);
 
     shz_vec2_t dir = shz_vec2_normalize(shz_vec2_sub(*to, *from));
+    
     pvr_vertex_t* vert = (pvr_vertex_t*)pvr_dr_target(state);
     vert->flags = PVR_CMD_VERTEX;
-    vert->x = (from->x + offset_x - dir.y * 2.0f) * ENJ_XSCALE;
-    vert->y = vid_mode->height - (from->y - dir.x * 2.0f);
+    vert->x = (to->x + offset_x + dir.y * SHELL_TRAIL_WIDTH) * ENJ_XSCALE;
+    vert->y = vid_mode->height - (to->y - dir.x * SHELL_TRAIL_WIDTH);
     vert->z = 1.0f;
     vert->argb = shell_color.raw;
     pvr_dr_commit(vert);
-
+    
     vert = (pvr_vertex_t*)pvr_dr_target(state);
     vert->flags =
-        i == SHELL_MOTION_BLUR_STEPS - 2 ? PVR_CMD_VERTEX_EOL : PVR_CMD_VERTEX;
-    vert->x = (from->x + offset_x + dir.y * 2.0f) * ENJ_XSCALE;
-    vert->y = vid_mode->height - (from->y + dir.x * 2.0f);
+    i == SHELL_MOTION_BLUR_STEPS - 2 ? PVR_CMD_VERTEX_EOL : PVR_CMD_VERTEX;
+    vert->x = (to->x + offset_x - dir.y * SHELL_TRAIL_WIDTH) * ENJ_XSCALE;
+    vert->y = vid_mode->height - (to->y + dir.x * SHELL_TRAIL_WIDTH);
     vert->z = 1.0f;
     vert->argb = shell_color.raw;
     pvr_dr_commit(vert);

@@ -52,10 +52,10 @@ int shell_update(shell_t *shell, float delta_time) {
   shell->trail[current_frame] = shell->position;
 
   // Check if the shell has fallen below y = 0 (ground level)
-  if (shell->position.y < 0.0f) {
+  if (shell->position.y < -vid_mode->height) {
     return 0; // Indicate that the shell should be destroyed
   }
-  if (shell->position.x < 0.0f || shell->position.x > vid_mode->width) {
+  if (shell->position.x < -vid_mode->width || shell->position.x > vid_mode->width<<1) {
     return 0; // Indicate that the shell should be destroyed
   }
 

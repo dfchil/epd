@@ -140,7 +140,7 @@ static void _render_player_TEST(void *data);
 static void _render_player_TR(void *data) {
   game_player_t *player = (game_player_t *)data;
   _render_arrow(player);
-  _render_trajectory(player);
+  // _render_trajectory(player);
   _render_arrow_fill(player);
   // _render_player_TEST(data);
 }

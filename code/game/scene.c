@@ -96,7 +96,7 @@ void scene_updater(void *data) {
   shell_t *shell = shell_get_first();
   while (shell != NULL) {
     shell_t *next_shell = shell->next;
-    if (!shell_update(shell, 5.0f / 60.0f)) {
+    if (!shell_update(shell, 6.0f / 60.0f)) {
       shell_destroy(shell);
     }
     shell = next_shell;

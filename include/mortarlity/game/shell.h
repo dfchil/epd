@@ -4,7 +4,7 @@
 #include <mortarlity/game/player.h>
 
 #define SHELL_SIMULATION_STEPS 10
-#define SHELL_MOTION_BLUR_STEPS 20
+#define SHELL_MOTION_BLUR_STEPS 12
 
 typedef struct shell_s {
   shz_vec2_t position;

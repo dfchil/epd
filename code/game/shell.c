@@ -38,8 +38,6 @@ shell_t *shell_create(float pos_x, float pos_y, float vel_x, float vel_y,
   return new_shell;
 }
 
-//
-
 int shell_update(shell_t *shell, float delta_time) {
 
   shell->frame++;

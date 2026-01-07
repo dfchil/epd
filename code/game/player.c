@@ -1,5 +1,6 @@
 #include <mortarlity/game/player.h>
 #include <mortarlity/game/scene.h>
+#include <mortarlity/game/shell.h>
 #include <mortarlity/render/player.h>
 
 static const enj_color_t _player_colors[] = {
@@ -57,8 +58,11 @@ int player_update(game_player_t *player) {
   if (player->cooldown_timer <= 0 && state.button.A == ENJ_BUTTON_DOWN) {
     // shoot
     player->cooldown_timer = SHOT_COOLDOWN_FRAMES; // 1 second cooldown
-    printf("Player shot! Angle: %f Power: %f\n", player->shoot_angle,
-           player->shoot_power);
+
+    shell_create(player->position.x, player->position.y,
+                 cosf(player->shoot_angle) * player->shoot_power * 10.0f,
+                 sinf(player->shoot_angle) * player->shoot_power * 10.0f,
+                 player);
   }
   if (state.button.UP == ENJ_BUTTON_DOWN) {
     player->shoot_power += 0.5f;

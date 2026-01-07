@@ -1,6 +1,8 @@
 #include <enDjinn/enj_enDjinn.h>
 #include <mortarlity/game/scene.h>
 #include <mortarlity/game/terrain.h>
+#include <mortarlity/game/shell.h>
+
 #include <mortarlity/modes/scene_transition.h>
 #include <mortarlity/render/scene.h>
 #include <mortarlity/render/terrain.h>
@@ -90,6 +92,16 @@ void scene_updater(void *data) {
   for (int i = 0; i < scene->num_players; i++) {
     num_alive += player_update(scene->players + i);
   }
+
+  shell_t *shell = shell_get_first();
+  while (shell != NULL) {
+    shell_t *next_shell = shell->next;
+    if (!shell_update(shell, 5.0f / 60.0f)) {
+      shell_destroy(shell);
+    }
+    shell = next_shell;
+  }
+
   if (num_alive <= 1) {
     _next_scene(scene);
     return;

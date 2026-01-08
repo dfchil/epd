@@ -107,11 +107,17 @@ static inline void _render_trajectory(game_player_t *player) {
 
   shz_vec2_t points[num_trajectory_points];
   float time_step = 0.5f;
+
+  shz_vec2_t fire_start = {
+      .x = player->position.x + (barrel.cos * 10.0f),
+      .y = player->position.y + (barrel.sin * 10.0f),
+  };
+
   for (int i = 0; i < num_trajectory_points; i++) {
     float t = time_step * (float)i;
     points[i] = (shz_vec2_t){
-        .x = player->position.x + (barrel.cos * power_scale * t),
-        .y = player->position.y + (barrel.sin * power_scale * t) -
+        .x = fire_start.x + (barrel.cos * power_scale * t),
+        .y = fire_start.y + (barrel.sin * power_scale * t) -
              (0.5f * 9.81f * t * t),
     };
     if (points[i].y < 0.0f) {

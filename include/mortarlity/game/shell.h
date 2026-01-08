@@ -4,7 +4,7 @@
 #include <mortarlity/game/player.h>
 
 #define SHELL_SIMULATION_STEPS 10
-#define SHELL_MOTION_BLUR_STEPS 120
+#define SHELL_MOTION_BLUR_STEPS 192
 
 typedef struct shell_s {
   shz_vec2_t position;
@@ -13,11 +13,20 @@ typedef struct shell_s {
 
   struct shell_s *prev;
   struct shell_s *next;
-  uint32_t frame;
+
+  int32_t frame;
+  uint16_t used_trail_steps;
+  uint16_t trail_fade; 
+  struct {
+    uint16_t moving: 1;
+    uint16_t reserved : 15;
+  };
   game_player_t *origin;
 } shell_t;
 
-shell_t *shell_get_first();
+int shell_modulo(int x, int N);
+
+shell_t* shell_get_first();
 
 shell_t *shell_create(float pos_x, float pos_y, float vel_x, float vel_y,
                       game_player_t *origin);

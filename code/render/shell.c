@@ -5,6 +5,7 @@
 void _render_shell_TR(void* data) {
   shell_t* shell = (shell_t*)data;
   enj_color_t shell_color = shell->origin->color.contrast;
+  enj_color_t trail_color = shell->origin->color.primary;
 
   pvr_dr_state_t state;
   pvr_dr_init(&state);
@@ -43,12 +44,12 @@ void _render_shell_TR(void* data) {
     int last_vert_pair =  i == shell->used_trail_steps - 1;
     int sprite_pos = shell_modulo(-shell->frame + i, SHELL_MOTION_BLUR_STEPS);
     if (shell->moving){
-      shell_color.a = SHELL_MOTION_BLUR_STEPS - i;
+      trail_color.a = SHELL_MOTION_BLUR_STEPS - i;
     } else {
-      shell_color.a = (uint8_t) (shell->trail_fade - i);
+      trail_color.a = (uint8_t) (shell->trail_fade - i);
     }
-    if (shell_color.a <= 0) {
-      shell_color.a = 0;
+    if (trail_color.a <= 0) {
+      trail_color.a = 0;
       last_vert_pair = 1;
     }
 
@@ -63,7 +64,7 @@ void _render_shell_TR(void* data) {
     vert->x = (from->x + offset_x + dir.y * SHELL_TRAIL_WIDTH) * ENJ_XSCALE;
     vert->y = vid_mode->height - (from->y - dir.x * SHELL_TRAIL_WIDTH);
     vert->z = 1.0f;
-    vert->argb = shell_color.raw;
+    vert->argb = trail_color.raw;
     pvr_dr_commit(vert);
 
     vert = (pvr_vertex_t*)pvr_dr_target(state);
@@ -71,7 +72,7 @@ void _render_shell_TR(void* data) {
     vert->x = (from->x + offset_x - dir.y * SHELL_TRAIL_WIDTH) * ENJ_XSCALE;
     vert->y = vid_mode->height - (from->y + dir.x * SHELL_TRAIL_WIDTH);
     vert->z = 1.0f;
-    vert->argb = shell_color.raw;
+    vert->argb = trail_color.raw;
     pvr_dr_commit(vert);
     if (last_vert_pair) {
       break;

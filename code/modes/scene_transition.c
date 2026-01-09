@@ -1,6 +1,7 @@
 #include <mortarlity/game/scene.h>
 #include <mortarlity/modes/scene_transition.h>
 #include <mortarlity/render/scene.h>
+#include <mortarlity/game/shell.h>
 
 #define CS_PIXELS_PER_STEP 10
 
@@ -14,6 +15,14 @@ void scene_transition_updater(void *data) {
   if (next_scene->offset_x <= 0) {
     enj_mode_pop();
     enj_mode_get()->data = next_scene;
+
+    shell_t* shell = shell_get_first();
+    while (shell != NULL) {
+      shell_t* next_shell = shell->next;
+      shell_destroy(shell);
+      shell = next_shell;
+    }
+
     scene_demolish(prev_scene);
   } else {
     render_scene(prev_scene);

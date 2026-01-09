@@ -4,7 +4,7 @@
 
 void _render_shell_TR(void* data) {
   shell_t* shell = (shell_t*)data;
-  enj_color_t shell_color = shell->origin->color;
+  enj_color_t shell_color = shell->origin->color.contrast;
 
   pvr_dr_state_t state;
   pvr_dr_init(&state);

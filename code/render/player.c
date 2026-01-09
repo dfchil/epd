@@ -1,4 +1,5 @@
 #include <enDjinn/enj_enDjinn.h>
+#include <mortarlity/game/collision.h>
 #include <mortarlity/game/player.h>
 #include <mortarlity/game/scene.h>
 #include <mortarlity/render/player.h>
@@ -20,18 +21,18 @@
 
 // clang-format off
 const static shz_vec2_t arrow_vertices[8] = {
-    {.x =  0.0f, .y = Y_OFF + -8.0f},  // 0
-    {.x =  4.0f, .y = Y_OFF + -4.0f},  // 1
-    {.x =  2.0f, .y = Y_OFF + -4.0f},  // 2
-    {.x =  2.0f, .y = Y_OFF +  6.0f},  // 3
-    {.x = -2.0f, .y = Y_OFF +  6.0f},  // 4
-    {.x = -2.0f, .y = Y_OFF + -4.0f},  // 5
-    {.x = -4.0f, .y = Y_OFF + -4.0f},  // 6
-    {.x =  0.0f, .y = Y_OFF + -8.0f}}; // 7
+    {.x =  0.0f, .y = -14.0f},  // 0
+    {.x =  4.0f, .y = -10.0f},  // 1
+    {.x =  2.0f, .y = -10.0f},  // 2
+    {.x =  2.0f, .y =   0.0f},  // 3
+    {.x = -2.0f, .y =   0.0f},  // 4
+    {.x = -2.0f, .y = -10.0f},  // 5
+    {.x = -4.0f, .y = -10.0f},  // 6
+    {.x =  0.0f, .y = -14.0f}}; // 7
 // clang-format on
 
 static inline void _render_arrow_fill(game_player_t *player) {
-  enj_color_t arrow_color = player->color;
+  enj_color_t arrow_color = player->color.primary;
   arrow_color.a = 0x3F;
 
   float offset_x = (float)((scene_t *)player->scene)->offset_x - 0.5f;
@@ -88,16 +89,107 @@ static inline void _render_arrow_fill(game_player_t *player) {
 }
 
 static inline void _render_arrow(game_player_t *player) {
-  enj_color_t arrow_color = player->color;
-  arrow_color.a = 0xAf;
 
+#define ARROW_LINE_THICKNESS 2.0f
   float offset_x = (float)((scene_t *)player->scene)->offset_x - 0.5f;
 
-  render_strip_line(player->arrow_vertices, 8,
-                    &(shz_vec3_t){.x = offset_x + player->position.x,
-                                  .y = -player->position.y,
-                                  .z = 1.0f},
-                    1.5f, arrow_color, PVR_LIST_TR_POLY);
+  const float fillheight =
+      1.0f - (player->cooldown_timer / (float)SHOT_COOLDOWN_FRAMES);
+
+  if (player->cooldown_timer == 0 ||
+      player->cooldown_timer >= SHOT_COOLDOWN_FRAMES) {
+    enj_color_t arrow_color = player->cooldown_timer == 0
+                                  ? player->color.primary
+                                  : player->color.contrast;
+    arrow_color.a = 0xAf;
+    render_strip_line(player->arrow_vertices, 8,
+                      &(shz_vec3_t){.x = offset_x + player->position.x,
+                                    .y = -player->position.y,
+                                    .z = 1.0f},
+                      ARROW_LINE_THICKNESS, arrow_color, PVR_LIST_TR_POLY);
+  } else {
+    enj_color_t prim_color = player->color.primary;
+    prim_color.a = 0xAf;
+    enj_color_t contrast_color = player->color.contrast;
+    contrast_color.a = 0xAf;
+
+    const float fillheight =
+        1.0f - (player->cooldown_timer / (float)SHOT_COOLDOWN_FRAMES);
+    const float arrow_scale =
+        1.2f + (player->shoot_power / MAX_SHOOT_POWER) * 2.5f;
+
+    shz_vec2_t cut_from = {.x = -5.0f, .y = arrow_vertices[0].y * fillheight};
+    shz_vec2_t cut_to = {.x = 5.0f, .y = arrow_vertices[0].y * fillheight};
+    if (fillheight * arrow_vertices[0].y <= arrow_vertices[1].y) {
+      // calculate intersection interpolation
+      float cut_intr = collision_line_line(
+          &arrow_vertices[0],
+          &(shz_vec2_t){.x = arrow_vertices[1].x - arrow_vertices[0].x,
+                        .y = arrow_vertices[1].y - arrow_vertices[0].y},
+          &cut_from,
+          &(shz_vec2_t){.x = cut_to.x - cut_from.x,
+                        .y = cut_to.y - cut_from.y});
+
+      // cut off before point 1
+      shz_vec2_t top_vertices[3];
+      top_vertices[0] = shz_vec2_lerp(player->arrow_vertices[7],
+                                      player->arrow_vertices[6], cut_intr);
+      top_vertices[1] = player->arrow_vertices[7];
+      top_vertices[2] = shz_vec2_lerp(player->arrow_vertices[0],
+                                      player->arrow_vertices[1], cut_intr);
+
+      render_strip_line(top_vertices, 3,
+                        &(shz_vec3_t){.x = offset_x + player->position.x,
+                                      .y = -player->position.y,
+                                      .z = 1.0f},
+                        ARROW_LINE_THICKNESS, contrast_color, PVR_LIST_TR_POLY);
+      shz_vec2_t bottom_vertices[8];
+      bottom_vertices[0] = top_vertices[2];
+      for (int i = 1; i < 7; i++) {
+        bottom_vertices[i] = player->arrow_vertices[i];
+      }
+      bottom_vertices[7] = top_vertices[0];
+      render_strip_line(bottom_vertices, 8,
+                        &(shz_vec3_t){.x = offset_x + player->position.x,
+                                      .y = -player->position.y,
+                                      .z = 1.0f},
+                        ARROW_LINE_THICKNESS, prim_color, PVR_LIST_TR_POLY);
+
+    } else {
+      float cut_intr = collision_line_line(
+          &arrow_vertices[2],
+          &(shz_vec2_t){.x = arrow_vertices[3].x - arrow_vertices[2].x,
+                        .y = arrow_vertices[3].y - arrow_vertices[2].y},
+          &cut_from,
+          &(shz_vec2_t){.x = cut_to.x - cut_from.x,
+                        .y = cut_to.y - cut_from.y});
+      shz_vec2_t top_vertices[7];
+      top_vertices[0] = shz_vec2_lerp(
+          player->arrow_vertices[4], player->arrow_vertices[5], 1.0 - cut_intr);
+      top_vertices[1] = player->arrow_vertices[5];
+      top_vertices[2] = player->arrow_vertices[6];
+      top_vertices[3] = player->arrow_vertices[0];
+      top_vertices[4] = player->arrow_vertices[1];
+      top_vertices[5] = player->arrow_vertices[2];
+      top_vertices[6] = shz_vec2_lerp(player->arrow_vertices[2],
+                                      player->arrow_vertices[3], cut_intr);
+      render_strip_line(top_vertices, 7,
+                        &(shz_vec3_t){.x = offset_x + player->position.x,
+                                      .y = -player->position.y,
+                                      .z = 1.0f},
+                        ARROW_LINE_THICKNESS, contrast_color, PVR_LIST_TR_POLY);
+      shz_vec2_t bottom_vertices[4];
+      bottom_vertices[0] = top_vertices[6];
+      bottom_vertices[1] = player->arrow_vertices[3];
+      bottom_vertices[2] = player->arrow_vertices[4];
+      bottom_vertices[3] = top_vertices[0];
+      render_strip_line(bottom_vertices, 4,
+                        &(shz_vec3_t){.x = offset_x + player->position.x,
+                                      .y = -player->position.y,
+                                      .z = 1.0f},
+                        ARROW_LINE_THICKNESS, prim_color, PVR_LIST_TR_POLY);
+    }
+  }
 }
 
 #define num_trajectory_points 1000
@@ -127,9 +219,9 @@ static inline void _render_trajectory(game_player_t *player) {
                         .y = 0.0f,
                         .z = 1.0f},
           1.0f,
-          (enj_color_t){.r = player->color.r,
-                        .g = player->color.g,
-                        .b = player->color.b,
+          (enj_color_t){.r = player->color.primary.r,
+                        .g = player->color.primary.g,
+                        .b = player->color.primary.b,
                         .a = 0x50},
           PVR_LIST_TR_POLY);
     }
@@ -147,7 +239,7 @@ static void _render_player_TR(void *data) {
   game_player_t *player = (game_player_t *)data;
   _render_arrow(player);
   // _render_trajectory(player);
-  _render_arrow_fill(player);
+  // _render_arrow_fill(player);
   // _render_player_TEST(data);
 }
 
@@ -161,7 +253,7 @@ static void _render_player_OP(void *data) {
   pvr_sprite_cxt_col(&cxt, PVR_LIST_OP_POLY);
   pvr_sprite_hdr_t *hdr = (pvr_sprite_hdr_t *)pvr_dr_target(state);
   pvr_sprite_compile(hdr, &cxt);
-  hdr->argb = player->color.raw;
+  hdr->argb = player->color.primary.raw;
   pvr_dr_commit(hdr);
 
   float offset_x = (float)((scene_t *)player->scene)->offset_x;
@@ -177,94 +269,6 @@ static void _render_player_OP(void *data) {
            vid_mode->height - player->position.y, 1.0f},
       },
       &state, NULL, NULL);
-}
-
-static void _render_player_TEST(void *data) {
-  game_player_t *player = (game_player_t *)data;
-
-  pvr_dr_state_t dr_state;
-  pvr_dr_init(&dr_state);
-  pvr_poly_hdr_t *mhdr_p = (pvr_poly_hdr_t *)pvr_dr_target(dr_state);
-  pvr_poly_cxt_t cxt;
-  pvr_poly_cxt_col(&cxt, PVR_LIST_TR_POLY);
-  cxt.gen.culling = PVR_CULLING_CW;
-  pvr_poly_compile(mhdr_p, &cxt);
-  pvr_dr_commit(mhdr_p);
-
-  float offset_x =
-      (float)((scene_t *)player->scene)->offset_x - 0.5f + player->position.x;
-  float offset_y = (float)player->position.y;
-
-  enj_color_t arrow_color = player->color;
-  arrow_color.a = 0x3F;
-
-  pvr_vertex_t *modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX;
-  modh_p->x = (player->arrow_vertices[0].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[0].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-  modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX;
-  modh_p->x = (player->arrow_vertices[1].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[1].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-  modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX_EOL;
-  modh_p->x = (player->arrow_vertices[6].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[6].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-
-  modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX;
-  modh_p->x = (player->arrow_vertices[4].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[4].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-  modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX;
-  modh_p->x = (player->arrow_vertices[5].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[5].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-  modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX_EOL;
-  modh_p->x = (player->arrow_vertices[3].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[3].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-
-  modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX;
-  modh_p->x = (player->arrow_vertices[2].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[2].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-  modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX;
-  modh_p->x = (player->arrow_vertices[3].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[3].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-  modh_p = (pvr_vertex_t *)pvr_dr_target(dr_state);
-  modh_p->flags = PVR_CMD_VERTEX_EOL;
-  modh_p->x = (player->arrow_vertices[5].x + offset_x) * ENJ_XSCALE;
-  modh_p->y = vid_mode->height - (player->arrow_vertices[5].y + offset_y);
-  modh_p->z = 11.11f;
-  modh_p->argb = arrow_color.raw;
-  pvr_dr_commit(modh_p);
-
-  pvr_dr_finish();
 }
 
 static void _render_player_MOD_TR(void *data) {
@@ -367,5 +371,5 @@ void render_player(game_player_t *player) {
 
   enj_render_list_add(PVR_LIST_OP_POLY, _render_player_OP, player);
   enj_render_list_add(PVR_LIST_TR_POLY, _render_player_TR, player);
-  enj_render_list_add(PVR_LIST_TR_MOD, _render_player_MOD_TR, player);
+  // enj_render_list_add(PVR_LIST_TR_MOD, _render_player_MOD_TR, player);
 }

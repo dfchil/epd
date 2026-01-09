@@ -38,7 +38,7 @@ static inline void _render_trajectory(game_player_t *player) {
                         .g = player->color.primary.g,
                         .b = player->color.primary.b,
                         .a = 0x50},
-          PVR_LIST_TR_POLY);
+          PVR_LIST_TR_POLY, NULL);
     }
   }
   render_strip_line(
@@ -46,13 +46,13 @@ static inline void _render_trajectory(game_player_t *player) {
       &(shz_vec3_t){.x = (float)((scene_t *)player->scene)->offset_x - 0.5f,
                     .y = 0.0f,
                     .z = 1.0f},
-      1.0f, (enj_color_t){.raw = 0x80FFFF00}, PVR_LIST_TR_POLY);
+      1.0f, (enj_color_t){.raw = 0x80FFFF00}, PVR_LIST_TR_POLY, NULL);
 }
 
 static void _render_player_TR(void *data) {
   game_player_t *player = (game_player_t *)data;
   render_arrow(player);
-  // _render_trajectory(player);
+  _render_trajectory(player);
 }
 
 static void _render_player_OP(void *data) {

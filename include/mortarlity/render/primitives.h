@@ -1,11 +1,14 @@
 #ifndef RENDER_PRIMITIVES_H
 #define RENDER_PRIMITIVES_H
 
-#include <sh4zam/shz_sh4zam.h>
 #include <dc/pvr.h>
+#include <sh4zam/shz_sh4zam.h>
 
-void render_sprite_line(shz_vec2_t from, shz_vec2_t to, float zvalue, float line_width, pvr_dr_state_t *state_ptr);
+void render_sprite_line(shz_vec2_t from, shz_vec2_t to, float zvalue,
+                        float line_width, pvr_dr_state_t *state_ptr);
 
-void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t* offset, float line_width, enj_color_t color, pvr_list_t list);
+void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
+                       float line_width, enj_color_t color, pvr_list_t list,
+                       float *zvalues);
 
 #endif // RENDER_PRIMITIVES_H

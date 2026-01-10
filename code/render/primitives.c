@@ -17,7 +17,8 @@ void render_sprite_line(shz_vec2_t from, shz_vec2_t to, float zvalue,
 }
 
 void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
-                       float line_width, enj_color_t color, pvr_list_t list) {
+                       float line_width, enj_color_t color, pvr_list_t list,
+                       float *zvalues) {
 
   pvr_dr_state_t state;
   pvr_dr_init(&state);
@@ -36,7 +37,7 @@ void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
   vert->x = (offset->x + points[0].x - v0.y * line_width * 0.5f) * ENJ_XSCALE;
   vert->y =
       (offset->y + vid_mode->height - (points[0].y + v0.x * line_width * 0.5f));
-  vert->z = offset->z;
+  vert->z = offset->z + (zvalues != NULL ? zvalues[0] : 0.0f);
   vert->argb = color.raw;
   pvr_dr_commit(vert);
 
@@ -45,7 +46,7 @@ void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
   vert->x = (offset->x + points[0].x + v0.y * line_width * 0.5f) * ENJ_XSCALE;
   vert->y =
       offset->y + vid_mode->height - (points[0].y - v0.x * line_width * 0.5f);
-  vert->z = offset->z;
+  vert->z = offset->z + (zvalues != NULL ? zvalues[0] : 0.0f);
   vert->argb = color.raw;
   pvr_dr_commit(vert);
 
@@ -59,7 +60,7 @@ void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
     // vert->flags = PVR_CMD_VERTEX;
     vert->x = (offset->x + points[i + 1].x - bisector.y) * ENJ_XSCALE;
     vert->y = offset->y + vid_mode->height - (points[i + 1].y + bisector.x);
-    vert->z = offset->z;
+    vert->z = offset->z + (zvalues != NULL ? zvalues[i + 1] : 0.0f);
     // vert->argb = color.raw;
     pvr_dr_commit(vert);
 
@@ -67,7 +68,7 @@ void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
     // vert->flags = PVR_CMD_VERTEX;
     vert->x = (offset->x + points[i + 1].x + bisector.y) * ENJ_XSCALE;
     vert->y = offset->y + vid_mode->height - (points[i + 1].y - bisector.x);
-    vert->z = offset->z;
+    vert->z = offset->z + (zvalues != NULL ? zvalues[i + 1] : 0.0f);
     // vert->argb = color.raw;
     pvr_dr_commit(vert);
 
@@ -80,7 +81,7 @@ void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
             ENJ_XSCALE;
   vert->y = (offset->y + vid_mode->height -
              (points[point_count - 1].y + v0.x * line_width * 0.5f));
-  vert->z = offset->z;
+  vert->z = offset->z + (zvalues != NULL ? zvalues[point_count - 1] : 0.0f);
   // vert->argb = color.raw;
   pvr_dr_commit(vert);
 
@@ -90,7 +91,7 @@ void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
             ENJ_XSCALE;
   vert->y = (offset->y + vid_mode->height -
              (points[point_count - 1].y - v0.x * line_width * 0.5f));
-  vert->z = offset->z;
+  vert->z = offset->z + (zvalues != NULL ? zvalues[point_count - 1] : 0.0f);
   // vert->argb = color.raw;
   pvr_dr_commit(vert);
 

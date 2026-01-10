@@ -74,10 +74,10 @@ void render_arrow(game_player_t *player) {
 
   for (int i = 0; i < 7; i++) {
     player->arrow_vertices[i] = (shz_vec2_t){
-        .x = barrel.sin * 10.0f +
+        .x = barrel.sin * BARREL_OFFSET +
              (arrow_scale * (arrow_vertices[i].x * barrel.cos -
                              arrow_scale * arrow_vertices[i].y * barrel.sin)),
-        .y = -barrel.cos * 10.0f +
+        .y = -barrel.cos * BARREL_OFFSET +
              (arrow_scale * (arrow_vertices[i].x * barrel.sin +
                              arrow_scale * arrow_vertices[i].y * barrel.cos)),
     };

@@ -9,6 +9,9 @@
 #define MIN_SHOOT_POWER 3.0f
 #define SHOT_COOLDOWN_FRAMES 150
 
+#define BARREL_OFFSET 6.0f // offset from player position to barrel start
+
+
 typedef struct {
   enj_color_t primary;
   enj_color_t contrast;

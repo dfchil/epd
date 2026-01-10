@@ -86,8 +86,8 @@ int player_update(game_player_t *player) {
     player->cooldown_timer = SHOT_COOLDOWN_FRAMES; // 1 second cooldown
 
     const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
-    shell_create(player->position.x + barrel.cos * 10.0f,
-                 player->position.y + barrel.sin * 10.0f,
+    shell_create(player->position.x + barrel.cos * BARREL_OFFSET,
+                 player->position.y + barrel.sin * BARREL_OFFSET,
                  barrel.cos * player->shoot_power * 10.0f,
                  barrel.sin * player->shoot_power * 10.0f, player);
   }

@@ -52,7 +52,7 @@ static inline void _render_trajectory(game_player_t* player) {
 static void _render_player_TR(void* data) {
   game_player_t* player = (game_player_t*)data;
   render_arrow(player);
-  _render_trajectory(player);
+  // _render_trajectory(player);
 }
 
 static void _render_player_OP(void* data) {

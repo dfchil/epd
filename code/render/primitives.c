@@ -54,7 +54,7 @@ void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
     shz_vec2_t v1 =
         shz_vec2_normalize(shz_vec2_sub(points[i + 2], points[i + 1]));
     shz_vec2_t bisector = shz_vec2_scale(
-        shz_vec2_normalize(shz_vec2_add(v0, v1)), line_width * 0.5f);
+        shz_vec2_normalize(shz_vec2_add(v0, v1)), line_width * 0.75f);
 
     vert = (pvr_vertex_t *)pvr_dr_target(state);
     // vert->flags = PVR_CMD_VERTEX;

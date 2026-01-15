@@ -31,8 +31,12 @@ static inline void _render_trajectory(game_player_t* player) {
 
     int terrain_index_0 =
         (int)(points[i].x / (vid_mode->width / terrain->num_verts));
-    int terrain_index_1 = terrain_index_0 + 3;
-    terrain_index_0 -= 2;
+    int terrain_index_1 = terrain_index_0;
+    if (barrel.cos >= 0.0f) {
+      terrain_index_1 += 3;
+    } else {
+      terrain_index_0 -= 3;
+    }
 
     for (int t = terrain_index_0; t < terrain_index_1; t++) {
       shz_vec2_t dv0 = shz_vec2_sub(points[i + 1], points[i]);
@@ -40,20 +44,21 @@ static inline void _render_trajectory(game_player_t* player) {
       float collision_delta =
           collision_line_line(points + i, &dv0, terrain->verts + t, &dv1);
 
-      if (collision_delta >= 0.0f) {
+      if (collision_delta >= 0.0f || points[i].y <= 0.0f || points[i].x <= 0.0f ||
+          points[i].x >= vid_mode->width) {
         points[i].x = points[i - 1].x + dv0.x * collision_delta;
         points[i].y = points[i - 1].y + dv0.y * collision_delta;
         return render_strip_line(
-            points, i + 1,
+            points, i,
             &(shz_vec3_t){
                 .x = (float)((scene_t*)player->scene)->offset_x - 0.5f,
                 .y = 0.0f,
                 .z = 1.0f},
-            1.0f,
+            0.5f,
             (enj_color_t){.r = player->color.primary.r,
                           .g = player->color.primary.g,
                           .b = player->color.primary.b,
-                          .a = 0x50},
+                          .a = 0x30},
             PVR_LIST_TR_POLY, NULL);
       }
     }

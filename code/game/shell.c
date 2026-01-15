@@ -8,16 +8,16 @@
 #include <mortarlity/render/shell.h>
 #include <sh4zam/shz_sh4zam.h>
 
-static shell_t *first_shell = NULL;
-static shell_t *last_shell = NULL;
+static shell_t* first_shell = NULL;
+static shell_t* last_shell = NULL;
 
 inline int shell_modulo(int x, int N) { return (x % N + N) % N; }
 
-shell_t *shell_get_first() { return first_shell; }
+shell_t* shell_get_first() { return first_shell; }
 
-shell_t *shell_create(float pos_x, float pos_y, float vel_x, float vel_y,
-                      game_player_t *origin) {
-  shell_t *new_shell = memalign(32, sizeof(shell_t));
+shell_t* shell_create(float pos_x, float pos_y, float vel_x, float vel_y,
+                      game_player_t* origin) {
+  shell_t* new_shell = memalign(32, sizeof(shell_t));
   if (!new_shell) {
     return NULL;
   }
@@ -35,6 +35,9 @@ shell_t *shell_create(float pos_x, float pos_y, float vel_x, float vel_y,
   new_shell->trail_fade = 0;
   new_shell->moving = 1;
 
+  new_shell->shadow_min_x = UINT32_MAX;
+  new_shell->shadow_max_x = 0;
+
   if (first_shell == NULL) {
     first_shell = new_shell;
     last_shell = new_shell;
@@ -50,14 +53,14 @@ shell_t *shell_create(float pos_x, float pos_y, float vel_x, float vel_y,
   return new_shell;
 }
 
-int shell_update(shell_t *shell, float delta_time) {
+int shell_update(shell_t* shell, float delta_time) {
   if (!shell->moving) {
     shell->trail_fade--;
     if (shell->trail_fade == 0) {
-      return 0; // Indicate that the shell should be destroyed
+      return 0;  // Indicate that the shell should be destroyed
     }
     render_shell(shell);
-    return 1; // Shell is inactive but not destroyed
+    return 1;  // Shell is inactive but not destroyed
   }
   if (shell->used_trail_steps < SHELL_MOTION_BLUR_STEPS) {
     shell->used_trail_steps++;
@@ -68,13 +71,17 @@ int shell_update(shell_t *shell, float delta_time) {
   int32_t current_frame = shell_modulo(-shell->frame, SHELL_MOTION_BLUR_STEPS);
 
   const float time_step = delta_time / (float)SHELL_SIMULATION_STEPS;
-  terrain_t *terrain = (terrain_t *)((scene_t *)shell->origin->scene)->terrain;
+  terrain_t* terrain = (terrain_t*)((scene_t*)shell->origin->scene)->terrain;
+
+  shell->shadow_min_x = UINT32_MAX;
+  shell->shadow_max_x = 0;
 
   for (int i = 0; i < SHELL_SIMULATION_STEPS; i++) {
     shz_vec2_t delta = shz_vec2_scale(shell->velocity, time_step);
     // test for collision with terrain here
     int terrain_index_0 = -1;
     int terrain_index_1 = -1;
+
     terrain_index_0 =
         (int)(shell->position.x / (vid_mode->width / terrain->num_verts));
     terrain_index_1 = (int)((shell->position.x + delta.x) /
@@ -85,23 +92,28 @@ int shell_update(shell_t *shell, float delta_time) {
         terrain_index_0 = terrain_index_1;
         terrain_index_1 = temp;
       }
+    } else {
+      terrain_index_0 -= 1;
     }
-    terrain_index_0 -= 1;
-    terrain_index_1 += 1;
-
     if (terrain_index_0 < 0) {
       terrain_index_0 = 0;
     }
     if (terrain_index_1 > terrain->num_verts - 1) {
       terrain_index_1 = terrain->num_verts - 1;
     }
+
+    shell->shadow_max_x = terrain_index_1 > shell->shadow_max_x
+                              ? terrain_index_1
+                              : shell->shadow_max_x;
+    shell->shadow_min_x = terrain_index_0 < shell->shadow_min_x
+                              ? terrain_index_0
+                              : shell->shadow_min_x;
+
     for (int t = terrain_index_0; t <= terrain_index_1; t++) {
-      shz_vec2_t seg_start = terrain->verts[t];
-      shz_vec2_t seg_end = terrain->verts[t + 1];
-      float collision_t =
-          collision_line_line(&shell->position, &delta, &seg_start,
-                              &((shz_vec2_t){.x = seg_end.x - seg_start.x,
-                                             .y = seg_end.y - seg_start.y}));
+      float collision_t = collision_line_line(
+          &shell->position, &delta, terrain->verts + t,
+          &((shz_vec2_t){.x = terrain->verts[t + 1].x - terrain->verts[t].x,
+                         .y = terrain->verts[t + 1].y - terrain->verts[t].y}));
 
       if (collision_t >= 0.0f) {
         // Collision detected
@@ -111,13 +123,14 @@ int shell_update(shell_t *shell, float delta_time) {
         shell->trail_fade = SHELL_MOTION_BLUR_STEPS;
         shell->moving = 0;
         render_shell(shell);
-        return 1; // Shell is still active
+        shell->velocity = (shz_vec2_t){.x = 0.0f, .y = 0.0f};
+        return 1;  // Shell is still active
       }
     }
 
     shell->position.x += delta.x;
     shell->position.y += delta.y;
-    shell->velocity.y -= 9.81f * time_step; // gravity
+    shell->velocity.y -= 9.81f * time_step;  // gravity
   }
   shell->trail[current_frame] = shell->position;
 
@@ -131,10 +144,10 @@ int shell_update(shell_t *shell, float delta_time) {
     shell->moving = 0;
   }
   render_shell(shell);
-  return 1; // Shell is still active
+  return 1;  // Shell is still active
 }
 
-void shell_destroy(shell_t *shell) {
+void shell_destroy(shell_t* shell) {
   if (shell->prev) {
     shell->prev->next = shell->next;
   } else {

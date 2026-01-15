@@ -6,9 +6,9 @@
 #include <sh4zam/shz_sh4zam.h>
 #include <stdlib.h>
 
-static void subdivide(terrain_t *terrain, size_t offset_left,
+static void subdivide(terrain_t* terrain, size_t offset_left,
                       size_t offset_right, float roughness) {
-  shz_vec2_t *verts = terrain->verts;
+  shz_vec2_t* verts = terrain->verts;
   if (offset_left + 1 >= offset_right) {
     return;
   }
@@ -30,28 +30,34 @@ static void subdivide(terrain_t *terrain, size_t offset_left,
 
 #define PLAYER_TERRAIN_VERT_WIDTH 5
 
-terrain_t *terrain_generate(int num_players, float roughness,
-                            float prev_last_y) {
-  printf("Generating terrain for %d players with roughness %f\n", num_players,
-         roughness);
-  size_t num_verts = vid_mode->width >> 2; // one vertex every 4 pixels
-  terrain_t *terrain =
+terrain_t* terrain_generate(int num_players, float roughness, float prev_last_y) {
+  size_t num_verts =
+      vid_mode->width >> 2;  // one vertex every 4 pixels
+  terrain_t* terrain =
       memalign(32, sizeof(terrain_t) + sizeof(shz_vec2_t) * (num_verts + 1));
   if (!terrain) {
     return NULL;
   }
-  terrain->verts = (shz_vec2_t *)(terrain + 1);
+  terrain->verts = (shz_vec2_t*)(terrain + 1);
   float x_step = (float)(vid_mode->width) / (float)(num_verts - 1);
   for (size_t i = 0; i < num_verts; i++) {
     terrain->verts[i].x = x_step * (float)i;
   }
 
-  terrain->min_y = (vid_mode->height >> 7);
+  terrain->min_y = (vid_mode->height >> 3);
   terrain->max_y = (vid_mode->height >> 4) * 11;
   terrain->roughness = roughness;
 
   terrain->num_verts = num_verts;
   terrain->verts[0].x = 0.0f;
+
+  if (prev_last_y < terrain->min_y) {
+    prev_last_y = terrain->min_y;
+  }
+  if (prev_last_y > terrain->max_y) {
+    prev_last_y = terrain->max_y;
+  }
+
   terrain->verts[0].y = prev_last_y;
   terrain->verts[num_verts - 1].y =
       terrain->min_y +

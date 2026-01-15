@@ -10,6 +10,7 @@
 #define num_trajectory_points 1000
 static inline void _render_trajectory(game_player_t* player) {
   const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
+  const terrain_t* terrain = ((scene_t*)player->scene)->terrain;
   const float power_scale = player->shoot_power * 10.0f;
 
   shz_vec2_t points[num_trajectory_points];
@@ -27,32 +28,42 @@ static inline void _render_trajectory(game_player_t* player) {
         .y = fire_start.y + (barrel.sin * power_scale * t) -
              (0.5f * 9.81f * t * t),
     };
-    if (points[i].y < 0.0f) {
-      return render_strip_line(
-          points, i,
-          &(shz_vec3_t){.x = (float)((scene_t*)player->scene)->offset_x - 0.5f,
-                        .y = 0.0f,
-                        .z = 1.0f},
-          1.0f,
-          (enj_color_t){.r = player->color.primary.r,
-                        .g = player->color.primary.g,
-                        .b = player->color.primary.b,
-                        .a = 0x50},
-          PVR_LIST_TR_POLY, NULL);
+
+    int terrain_index_0 =
+        (int)(points[i].x / (vid_mode->width / terrain->num_verts));
+    int terrain_index_1 = terrain_index_0 + 3;
+    terrain_index_0 -= 2;
+
+    for (int t = terrain_index_0; t < terrain_index_1; t++) {
+      shz_vec2_t dv0 = shz_vec2_sub(points[i + 1], points[i]);
+      shz_vec2_t dv1 = shz_vec2_sub(terrain->verts[t + 1], terrain->verts[t]);
+      float collision_delta =
+          collision_line_line(points + i, &dv0, terrain->verts + t, &dv1);
+
+      if (collision_delta >= 0.0f) {
+        points[i].x = points[i - 1].x + dv0.x * collision_delta;
+        points[i].y = points[i - 1].y + dv0.y * collision_delta;
+        return render_strip_line(
+            points, i + 1,
+            &(shz_vec3_t){
+                .x = (float)((scene_t*)player->scene)->offset_x - 0.5f,
+                .y = 0.0f,
+                .z = 1.0f},
+            1.0f,
+            (enj_color_t){.r = player->color.primary.r,
+                          .g = player->color.primary.g,
+                          .b = player->color.primary.b,
+                          .a = 0x50},
+            PVR_LIST_TR_POLY, NULL);
+      }
     }
   }
-  render_strip_line(
-      points, num_trajectory_points,
-      &(shz_vec3_t){.x = (float)((scene_t*)player->scene)->offset_x - 0.5f,
-                    .y = 0.0f,
-                    .z = 1.0f},
-      1.0f, (enj_color_t){.raw = 0x80FFFF00}, PVR_LIST_TR_POLY, NULL);
 }
 
 static void _render_player_TR(void* data) {
   game_player_t* player = (game_player_t*)data;
   render_arrow(player);
-  // _render_trajectory(player);
+  _render_trajectory(player);
 }
 
 static void _render_player_OP(void* data) {
@@ -77,9 +88,9 @@ static void _render_player_OP(void* data) {
 
   const float pmodel[4][3] = {
       {(player->position.x + offset_x - 7.0f) * ENJ_XSCALE,
-       vid_mode->height - player->position.y -1.0f, 10.0f},  // 0
+       vid_mode->height - player->position.y - 1.5f, 10.0f},  // 0
       {(player->position.x + offset_x + 6.0f) * ENJ_XSCALE,
-       vid_mode->height - player->position.y -1.0f, 10.0f},  // 1
+       vid_mode->height - player->position.y - 1.5f, 10.0f},  // 1
       {(player->position.x + offset_x + 3.0f) * ENJ_XSCALE,
        vid_mode->height - player->position.y + 5.0f, 10.0f},  // 2
       {(player->position.x + offset_x - 4.0f) * ENJ_XSCALE,

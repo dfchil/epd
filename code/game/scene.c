@@ -24,7 +24,7 @@ void scene_demolish(scene_t *scene) {
 }
 
 scene_t *scene_construct(int num_players, scene_t *prev_scene) {
-  float prev_last_y = 0.0f;
+  float prev_last_y = -1.0f;
   if (prev_scene && prev_scene->terrain) {
     prev_last_y =
         prev_scene->terrain->verts[prev_scene->terrain->num_verts - 1].y;

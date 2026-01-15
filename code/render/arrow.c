@@ -7,7 +7,7 @@
 #include <mortarlity/render/primitives.h>
 #include <sh4zam/shz_sh4zam.h>
 
-#define ARROW_LINE_THICKNESS 1.f
+#define ARROW_LINE_THICKNESS 1.5f
 
 /**     5
  *      /\

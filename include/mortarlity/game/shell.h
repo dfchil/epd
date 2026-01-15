@@ -22,6 +22,9 @@ typedef struct shell_s {
     uint16_t reserved : 15;
   };
   game_player_t *origin;
+
+  uint32_t shadow_min_x;
+  uint32_t shadow_max_x;
 } shell_t;
 
 int shell_modulo(int x, int N);

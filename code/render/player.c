@@ -10,7 +10,7 @@
 #define num_trajectory_points 1000
 static inline void _render_trajectory(game_player_t* player) {
   const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
-  float power_scale = player->shoot_power * 10.0f;
+  float power_scale = player->shoot_power;
 
   shz_vec2_t points[num_trajectory_points];
   float time_step = 0.5f;
@@ -52,7 +52,7 @@ static inline void _render_trajectory(game_player_t* player) {
 static void _render_player_TR(void* data) {
   game_player_t* player = (game_player_t*)data;
   render_arrow(player);
-  // _render_trajectory(player);
+  _render_trajectory(player);
 }
 
 static void _render_player_OP(void* data) {

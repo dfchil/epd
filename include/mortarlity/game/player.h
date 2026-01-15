@@ -5,8 +5,8 @@
 #include <sh4zam/shz_sh4zam.h>
 #include <stdint.h>
 
-#define MAX_SHOOT_POWER 20.0f
-#define MIN_SHOOT_POWER 3.0f
+#define MAX_SHOOT_POWER 150.0f
+#define MIN_SHOOT_POWER 30.0f
 #define SHOT_COOLDOWN_FRAMES 150
 
 #define BARREL_OFFSET 6.0f // offset from player position to barrel start

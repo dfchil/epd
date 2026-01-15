@@ -19,6 +19,13 @@ static player_col_def_t _player_colors[] = {
 
 #define ANGLE_MAX 2.26893  // 130 degrees in radians
 #define ANGLE_MIN 0.872665 // 50 degrees in radians
+#define SHOT_POWER_BIG_STEP (MAX_SHOOT_POWER / 40.0f)
+#define SHOT_POWER_SMALL_STEP (MAX_SHOOT_POWER / 200.0f)
+
+#ifndef SHZ_ABS
+#define SHZ_ABS(x) ((x) < 0 ? -(x) : (x))
+#endif 
+
 
 // static const char* _player_color_names[NUM_PLAYER_COLORS] = {
 //     "BLUE", "GOLD", "RED ", "GREEN", "PURPLE", "SILVER", "PINK", "TEAL"};
@@ -88,14 +95,14 @@ int player_update(game_player_t *player) {
     const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
     shell_create(player->position.x + barrel.cos * BARREL_OFFSET,
                  player->position.y + barrel.sin * BARREL_OFFSET,
-                 barrel.cos * player->shoot_power * 10.0f,
-                 barrel.sin * player->shoot_power * 10.0f, player);
+                 barrel.cos * player->shoot_power,
+                 barrel.sin * player->shoot_power, player);
   }
   if (state.button.UP == ENJ_BUTTON_DOWN) {
-    player->shoot_power += 0.5f;
+    player->shoot_power += SHOT_POWER_BIG_STEP;
   }
   if (state.button.DOWN == ENJ_BUTTON_DOWN) {
-    player->shoot_power -= 0.5f;
+    player->shoot_power -= SHOT_POWER_BIG_STEP;
   }
   if (state.button.LEFT == ENJ_BUTTON_DOWN) {
     player->shoot_angle += 0.01f;
@@ -106,18 +113,11 @@ int player_update(game_player_t *player) {
   if (state.button.RIGHT == ENJ_BUTTON_DOWN) {
     player->shoot_angle -= 0.01f;
   }
-  if (state.joyx < -10) {
+  if (SHZ_ABS(state.joyx) > 10) {
     player->shoot_angle += 0.001f * -((float)state.joyx) / 128.0f;
-    if (player->shoot_angle > ANGLE_MAX) {
-      player->shoot_angle = ANGLE_MAX;
-    }
-  } else if (state.joyx > 10) {
-    player->shoot_angle -= 0.001f * ((float)state.joyx) / 128.0f;
   }
-  if (state.joyy > 10) {
-    player->shoot_power -= 0.05f * ((float)state.joyy) / 128.0f;
-  } else if (state.joyy < -10) {
-    player->shoot_power += 0.05f * -((float)state.joyy) / 128.0f;
+  if (SHZ_ABS(state.joyy) > 10) {
+    player->shoot_power -= SHOT_POWER_SMALL_STEP * ((float)state.joyy) / 128.0f;
   }
 
   if (player->shoot_angle < ANGLE_MIN) {

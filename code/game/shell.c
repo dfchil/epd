@@ -96,12 +96,10 @@ int shell_update(shell_t *shell, float delta_time) {
       terrain_index_1 = terrain->num_verts - 1;
     }
     for (int t = terrain_index_0; t <= terrain_index_1; t++) {
-      shz_vec2_t seg_start = terrain->verts[t];
-      shz_vec2_t seg_end = terrain->verts[t + 1];
       float collision_t =
-          collision_line_line(&shell->position, &delta, &seg_start,
-                              &((shz_vec2_t){.x = seg_end.x - seg_start.x,
-                                             .y = seg_end.y - seg_start.y}));
+          collision_line_line(&shell->position, &delta, terrain->verts + t,
+                              &((shz_vec2_t){.x = terrain->verts[t + 1].x - terrain->verts[t].x,
+                                             .y = terrain->verts[t + 1].y - terrain->verts[t].y}));
 
       if (collision_t >= 0.0f) {
         // Collision detected

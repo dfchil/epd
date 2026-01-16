@@ -7,7 +7,7 @@
 #include <mortarlity/render/primitives.h>
 #include <sh4zam/shz_sh4zam.h>
 
-#define ARROW_LINE_THICKNESS 1.5f
+#define ARROW_LINE_THICKNESS 1.2f
 
 /**     5
  *      /\
@@ -35,24 +35,23 @@ alignas(32) const static shz_vec2_t arrow_vertices[9] = {
   };
 // clang-format on
 
-    void _render_arrow_OP(void *data) {
+void _render_arrow_OP(void *data) {
   game_player_t *player = (game_player_t *)data;
+  const float arrow_scale =
+      1.2f + (player->shoot_power / MAX_SHOOT_POWER) * 2.5f;
+  const float line_thickness = ARROW_LINE_THICKNESS * shz_sqrtf(arrow_scale);
 
   float offset_x = (float)((scene_t *)player->scene)->offset_x - 0.5f;
 
-  const float fillheight =
-      1.0f - (player->cooldown_timer / (float)SHOT_COOLDOWN_FRAMES);
-  enj_color_t prim_color = player->color.primary;
-  enj_color_t contrast_color = player->color.contrast;
-  contrast_color.a = 0xAf;
   render_strip_line(player->arrow_vertices, 9,
                     &(shz_vec3_t){.x = offset_x + player->position.x,
                                   .y = -player->position.y,
                                   .z = 1.0f},
-                    ARROW_LINE_THICKNESS, prim_color, PVR_LIST_OP_POLY, NULL);
+                    line_thickness, player->color.primary, PVR_LIST_OP_POLY, NULL);
 
   if (player->cooldown_timer != 0 &&
       player->cooldown_timer <= SHOT_COOLDOWN_FRAMES) {
+
     const float fillheight =
         1.0f - (player->cooldown_timer / (float)SHOT_COOLDOWN_FRAMES);
     alignas(32) float zvalues[9];
@@ -63,7 +62,7 @@ alignas(32) const static shz_vec2_t arrow_vertices[9] = {
                       &(shz_vec3_t){.x = offset_x + player->position.x,
                                     .y = -player->position.y,
                                     .z = -100.0f * fillheight},
-                      ARROW_LINE_THICKNESS, contrast_color, PVR_LIST_TR_POLY,
+                      line_thickness, player->color.contrast, PVR_LIST_TR_POLY,
                       zvalues);
   }
 }

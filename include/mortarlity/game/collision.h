@@ -2,7 +2,7 @@
 #define GAME_COLLISION_H
 
 #include <mortarlity/game/player.h>
-#include <mortarlity/game/shell.h>
+#include <mortarlity/game/package.h>
 #include <mortarlity/game/terrain.h>
 
 

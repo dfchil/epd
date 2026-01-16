@@ -1,6 +1,6 @@
 #include <enDjinn/enj_enDjinn.h>
 #include <mortarlity/game/scene.h>
-#include <mortarlity/game/shell.h>
+#include <mortarlity/game/package.h>
 #include <mortarlity/game/terrain.h>
 #include <mortarlity/game/confetti.h>
 
@@ -95,13 +95,13 @@ void scene_updater(void *data) {
     num_alive += player_update(scene->players + i);
   }
 
-  shell_t *shell = shell_get_first();
-  while (shell != NULL) {
-    shell_t *next_shell = shell->next;
-    if (!shell_update(shell, 8.0f / 60.0f)) {
-      shell_destroy(shell);
+  pkg_t *pkg = package_get_first();
+  while (pkg != NULL) {
+    pkg_t *next_pkg = pkg->next;
+    if (!package_update(pkg, 8.0f / 60.0f)) {
+      package_destroy(pkg);
     }
-    shell = next_shell;
+    pkg = next_pkg;
   }
 
   confetti_cluster_t *confetti = confetti_get_first();

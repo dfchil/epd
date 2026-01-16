@@ -42,6 +42,5 @@ int sfx_play(sfx_ref_t sfx, int volume, int pan) {
 
 int sfx_pos2pan(float xpos) {
   float pan_ratio = (xpos / (float)vid_mode->width);
-  printf("pan output: %d\n", (int)(pan_ratio * 255.0f));
   return (int)(pan_ratio * 255.0f);
 }

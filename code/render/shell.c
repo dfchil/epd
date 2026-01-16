@@ -42,7 +42,7 @@ void _render_shell_TR(void* data) {
   pvr_poly_compile(hdr_pp, &cxt_poly);
   pvr_dr_commit(hdr_pp);
 
-#define SHELL_TRAIL_WIDTH 1.0f
+#define SHELL_TRAIL_WIDTH 3.0f
 
   for (int i = 0; i < shell->used_trail_steps; i++) {
     int last_vert_pair = i == shell->used_trail_steps - 1;

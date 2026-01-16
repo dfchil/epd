@@ -15,4 +15,12 @@
  */
 float collision_line_line(shz_vec2_t* l1_start, shz_vec2_t* l1_vec,
                           shz_vec2_t* l2_start, shz_vec2_t* l2_vec);
+
+/** Line-player collision detection
+ * @param player The player to test against
+ * @param line_start Start point of the line
+ * @param line_vec Vector of the line
+ *  @return The fractional distance along the line where the collision occurs, or -1.0f if no collision
+ */
+float collision_player_line(game_player_t *player, shz_vec2_t *line_start, shz_vec2_t *line_vec);
 #endif // GAME_COLLISION_H

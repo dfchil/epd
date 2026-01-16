@@ -2,6 +2,7 @@
 #include <mortarlity/game/scene.h>
 #include <mortarlity/game/shell.h>
 #include <mortarlity/render/player.h>
+#include <mortarlity/sfx/sounds.h>
 
 static player_col_def_t _player_colors[] = {
     {.primary = {.raw = 0xff14a5ff}, .contrast = {.raw = 0}}, // blue
@@ -24,8 +25,7 @@ static player_col_def_t _player_colors[] = {
 
 #ifndef SHZ_ABS
 #define SHZ_ABS(x) ((x) < 0 ? -(x) : (x))
-#endif 
-
+#endif
 
 // static const char* _player_color_names[NUM_PLAYER_COLORS] = {
 //     "BLUE", "GOLD", "RED ", "GREEN", "PURPLE", "SILVER", "PINK", "TEAL"};
@@ -43,16 +43,17 @@ void player_setup_colors() {
   for (size_t i = 0; i < NUM_PLAYER_COLORS; i++) {
     enj_color_t negcol;
     if (_player_colors[i].contrast.raw == 0) {
+      negcol = (enj_color_t){
+          .a = 255,
+          .r = SHZ_MIN(255 - _player_colors[i].primary.r + 48, 255),
+          .g = SHZ_MIN(255 - _player_colors[i].primary.g + 48, 255),
+          .b = SHZ_MIN(255 - _player_colors[i].primary.b + 48, 255)};
+    } else {
       negcol =
           (enj_color_t){.a = 255,
-                        .r = SHZ_MIN(255 - _player_colors[i].primary.r + 48, 255),
-                        .g = SHZ_MIN(255 - _player_colors[i].primary.g + 48, 255),
-                        .b = SHZ_MIN(255 - _player_colors[i].primary.b + 48, 255)};
-    } else {
-      negcol = (enj_color_t){.a = 255,
-                             .r = SHZ_MIN(_player_colors[i].contrast.r + 48, 255),
-                             .g = SHZ_MIN(_player_colors[i].contrast.g + 48, 255),
-                             .b = SHZ_MIN(_player_colors[i].contrast.b + 48, 255)};
+                        .r = SHZ_MIN(_player_colors[i].contrast.r + 48, 255),
+                        .g = SHZ_MIN(_player_colors[i].contrast.g + 48, 255),
+                        .b = SHZ_MIN(_player_colors[i].contrast.b + 48, 255)};
     }
     _player_colors[i].contrast.raw = negcol.raw;
   }
@@ -73,6 +74,7 @@ void player_initialize(int player_index, void *scene) {
   player->scene = scene;
   player->controller.updatefun = NULL;
   player->controller.state = NULL;
+  player->controller.port = (enj_ctrl_port_name_e)(ENJ_PORT_A + player_index);
 }
 
 int player_update(game_player_t *player) {
@@ -97,6 +99,7 @@ int player_update(game_player_t *player) {
                  player->position.y + barrel.sin * BARREL_OFFSET,
                  barrel.cos * player->shoot_power,
                  barrel.sin * player->shoot_power, player);
+    sfx_play(SFX_LAUNCH, 128, sfx_pos2pan(player->position.x));
   }
   if (state.button.UP == ENJ_BUTTON_DOWN) {
     player->shoot_power += SHOT_POWER_BIG_STEP;

@@ -11,3 +11,12 @@ Either countdown timer or first to N points
 When a node is delivered to, it becomes unavailbe for deliveres for some time scaled by the trajectory of the package, meaning that it is possible to sabotage the other players slightly.
 
 Nodes can hit themselved to deny delivery, with the added punishment of the package firing mechanism only rechargin after end of stun. 
+
+# sweep mode
+angle sweeps from one end of screen to the other, 
+player controls height and can hold trigger to either hold in place or double movement
+
+increasing velocity also increases ground movement speed, but probably not proportionally
+
+# music mode
+insert CD, seed is calculated from track data, round time is track length

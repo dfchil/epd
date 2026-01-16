@@ -1,7 +1,8 @@
 #include <enDjinn/enj_enDjinn.h>
 #include <mortarlity/game/scene.h>
-#include <mortarlity/game/terrain.h>
 #include <mortarlity/game/shell.h>
+#include <mortarlity/game/terrain.h>
+#include <mortarlity/game/confetti.h>
 
 #include <mortarlity/modes/scene_transition.h>
 #include <mortarlity/render/scene.h>
@@ -43,7 +44,7 @@ scene_t *scene_construct(int num_players, scene_t *prev_scene) {
   new_scene->terrain = terrain_generate(
       num_players, 5.0f * ((rand() % 1000 / 1000.0f) + 0.3f), prev_last_y);
 
-  enj_ctrlr_state_t** cstates = enj_ctrl_get_states();
+  enj_ctrlr_state_t **cstates = enj_ctrl_get_states();
 
   // randomize start positions
   for (int i = 0; i < num_players; i++) {
@@ -55,7 +56,8 @@ scene_t *scene_construct(int num_players, scene_t *prev_scene) {
     player_initialize(i, new_scene);
 
     if (cstates[i] != NULL) {
-      new_scene->players[i].controller.updatefun = enj_read_dreamcast_controller;
+      new_scene->players[i].controller.updatefun =
+          enj_read_dreamcast_controller;
       new_scene->players[i].controller.state =
           &(new_scene->players[i].controller);
       new_scene->players[i].controller.port = i;
@@ -96,10 +98,19 @@ void scene_updater(void *data) {
   shell_t *shell = shell_get_first();
   while (shell != NULL) {
     shell_t *next_shell = shell->next;
-    if (!shell_update(shell, 12.0f / 60.0f)) {
+    if (!shell_update(shell, 8.0f / 60.0f)) {
       shell_destroy(shell);
     }
     shell = next_shell;
+  }
+
+  confetti_cluster_t *confetti = confetti_get_first();
+  while (confetti != NULL) {
+    confetti_cluster_t *next_confetti = confetti->next;
+    if (!confetti_update(confetti)) {
+      confetti_destroy(confetti);
+    }
+    confetti = next_confetti;
   }
 
   if (num_alive <= 1) {

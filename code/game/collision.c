@@ -20,24 +20,17 @@ float collision_line_line(shz_vec2_t* l1_start, shz_vec2_t* l1_vec,
   return -1.0f;
 }
 
-float collision_shell_terrain(shell_t *shell, terrain_t *terrain,
-                              float delta_time) {
-  //   shz_vec2_t start_pos = shell->position;
-  //   shz_vec2_t end_pos = shz_vec2_add(
-  //       shell->position, shz_vec2_scale(shell->velocity, delta_time));
+float collision_player_line(game_player_t* player, shz_vec2_t* line_start,
+                            shz_vec2_t* line_vec) {
 
-  //   shz_vec2_t movement_vec = shz_vec2_sub(end_pos, start_pos);
-
-  //   for (int i = 0; i < terrain->num_segments; i++) {
-  //     terrain_segment_t *segment = &terrain->segments[i];
-  //     float collision_t = collision_line_line(
-  //         start_pos, movement_vec,
-  //         segment->start_pos,
-  //         shz_vec2_sub(segment->end_pos, segment->start_pos));
-  //     if (collision_t >= 0.0f) {
-  //       return collision_t;
-  //     }
-  //   }
-
-  return -1.0f;
+  const shz_vec2_t player_roof_start = {
+      .x = player->position.x - 7.0f,
+      .y = player->position.y,
+  };
+  const shz_vec2_t player_roof_vec = {
+      .x = 13.0f,
+      .y = 0.0f,
+  };
+  return collision_line_line(&player_roof_start, &player_roof_vec,
+                               line_start, line_vec);
 }

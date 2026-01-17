@@ -7,7 +7,7 @@
 typedef struct confetti_particle_s {
   shz_vec2_t position;
   shz_vec2_t velocity;
-  float rotation;
+  shz_quat_t rotation;
   float rotation_speed;
   float size;
 } confetti_particle_t;

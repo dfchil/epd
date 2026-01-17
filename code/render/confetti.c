@@ -40,22 +40,7 @@ void _render_confett_TR(void* data) {
       corners[c][1] = vid_mode->height - (particle->position.y + corners[c][1]);
       corners[c][2] = 2.0f;
     }
-    
-    if (i == 0){
-      printf("Corners:\n %f,%f\n %f,%f\n %f,%f\n %f,%f\n", corners[0][0],
-             corners[0][1], corners[1][0], corners[1][1], corners[2][0],
-             corners[2][1], corners[3][0], corners[3][1]);
-    }
-    // };
-    //     {(particle->position.x - size) * ENJ_XSCALE,
-    //      vid_mode->height - (particle->position.y - size), 2.0f},
-    //     {(particle->position.x + size) * ENJ_XSCALE,
-    //      vid_mode->height - (particle->position.y - size), 2.0f},
-    //     {(particle->position.x + size) * ENJ_XSCALE,
-    //      vid_mode->height - (particle->position.y + size), 2.0f},
-    //     {(particle->position.x - size) * ENJ_XSCALE,
-    //      vid_mode->height - (particle->position.y + size), 2.0f},
-    // };
+
     enj_draw_sprite(corners, &state, &hdr_s, NULL);
   }
   pvr_dr_finish();

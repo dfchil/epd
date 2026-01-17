@@ -15,8 +15,9 @@
       "miDebuggerPath": "/opt/toolchains/dc/sh-elf/bin/sh-elf-gdb",
       "miDebuggerServerAddress": "localhost:2159", //common misconception: we connect to the gdb server offered by dc-tool-ip, NOT to the Dreamcast directly !
       "debugServerPath": "/opt/toolchains/dc/bin/dc-tool-ip",
-      "debugServerArgs": "-g -t 192.168.3.12 -x ${workspaceFolder}/bin/mortarlity.elf -f -m ${workspaceFolder}/cdrom/",
-      // "debugServerArgs": "-g -t 10.0.0.248 -x ${workspaceFolder}/bin/mortarlity.elf",
+      // "debugServerArgs": "-g -t 192.168.3.12 -x ${workspaceFolder}/bin/mortarlity.elf -f -m ${workspaceFolder}/cdrom/",
+      "debugServerArgs": "-g -t 10.0.0.248 -x ${workspaceFolder}/bin/mortarlity.elf -f -m ${workspaceFolder}/cdrom/",
+
       "externalConsole": false,
       "avoidWindowsConsoleRedirection": false,
       "internalConsoleOptions": "openOnSessionStart"

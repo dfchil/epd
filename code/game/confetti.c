@@ -18,7 +18,6 @@ confetti_cluster_t *confetti_create(shz_vec2_t position, enj_color_t color_src,
     return NULL;
   }
   new_confetti->particles = (confetti_particle_t *)(new_confetti + 1);
-  new_confetti->position = position;
   for (int i = 0; i < num_particles; i++) {
     float velocity_angle = (float)(50 + rand() % 80) * (3.14159f / 180.0f);
     new_confetti->particles[i].rotation = shz_vec3_normalize(

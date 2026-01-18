@@ -3,6 +3,7 @@ from PIL import Image
 import math as m
 import os
 import cv2
+from scipy.special import comb
 
 
 def hash(p: tuple[float, float]) -> tuple[float, float]:
@@ -59,11 +60,38 @@ haze = 1.5
 size = 0.075
 count = 3
 
-def electricNyanCat(uv: tuple[float, float], time: float) -> float:
-    pp = toPolar(uv)
+def smoothstep(x, x_min=0.0, x_max=1.0, N=1):
+    x = np.clip((x - x_min) / (x_max - x_min), 0, 1)
+
+    result = 0
+    for n in range(0, N + 1):
+         result += comb(N + n, n) * comb(2 * N + 1, N - n) * (-x) ** n
+
+    result *= x ** (N + 1)
+
+    return result
+
+def electricNyanCat(uv: tuple[float, float], mytime: float) -> float:
+    pp:tuple[float, float] = toPolar(uv)
     pp[1] += 0.2 * p[0]
     p = toRect(pp)
-    col:tuple[float, float, float] = (0.0, 0.0, 0.0)
+    col: float = 0.0
+
+    a1: float = smoothstep(0.05, 1.0, m.sqrt(p[0]**2 + (p[1] - 20.80)**2))
+    s1: float = 1.0 / (a1 + 0.5) * 1.1
+    e1 = 1.6 + 0.4 * m.sin(mytime * m.sqrt(3.0))
+
+    for i in range(count):
+        fi = float(i)
+        time = mytime + fi
+        fe1: float = (m.pow(fi +1.0, 0.2)) * e1
+        d1: float = m.fabs((p[1] * haze) * thickness / (p[1] - fe1 *fbm((p[0] + a1, p[1] + a1), time *0.11)*a1)) * s1
+        col += d1* size *0.8
+    col /= float(count-1)
+    return col
+
+
+
 
     
 

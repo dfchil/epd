@@ -118,7 +118,7 @@ vec3 electricNyanCat(in vec2 uv)
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
   vec2 uv = fragCoord.xy/iResolution.xy;
-  uv = 5.0*uv - 2.5;
+  uv = 6.0*uv - 3.;
   uv.x *= 0.8* iResolution.x/iResolution.y;
   
   vec3 col = electricNyanCat(uv*2.0);

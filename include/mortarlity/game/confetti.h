@@ -13,13 +13,8 @@ typedef struct confetti_particle_s {
 } confetti_particle_t;
 
 typedef struct confetti_cluster_s {
-  shz_vec2_t position;
-  shz_vec2_t velocity;
   enj_color_t color_src;
   enj_color_t color_dst;
-  float rotation;
-  float rotation_speed;
-  float size;
   int lifetime;
   int age;
   int num_particles;

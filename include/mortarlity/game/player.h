@@ -28,6 +28,7 @@ typedef struct game_player_s {
   enj_abstract_ctrlr_t controller;
   void *scene;
   shz_vec2_t arrow_vertices[9];
+  float x_drift;
 } game_player_t;
 
 void player_initialize(int player_index, void *scene);

@@ -3,6 +3,7 @@
 #include <dc/video.h>
 #include <enDjinn/enj_enDjinn.h>
 #include <mortarlity/sfx/sounds.h>
+#include <sys/param.h>
 
 // clang-format off
 static const char *filenames[] = {
@@ -37,7 +38,7 @@ int sfx_play(sfx_ref_t sfx, int volume, int pan) {
   if (_sfxs[sfx] == SFXHND_INVALID) {
     return -1;
   }
-  return snd_sfx_play(_sfxs[sfx], volume, pan);
+  return snd_sfx_play(_sfxs[sfx], MIN(volume, 255), pan);
 }
 
 int sfx_pos2pan(float xpos) {

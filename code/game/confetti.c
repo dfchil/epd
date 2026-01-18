@@ -20,10 +20,10 @@ confetti_cluster_t *confetti_create(shz_vec2_t position, enj_color_t color_src,
   new_confetti->particles = (confetti_particle_t *)(new_confetti + 1);
   new_confetti->position = position;
   for (int i = 0; i < num_particles; i++) {
-    float velocity_angle = (float)(40 + rand() % 100) * (3.14159f / 180.0f);
+    float velocity_angle = (float)(50 + rand() % 80) * (3.14159f / 180.0f);
     new_confetti->particles[i].rotation = shz_vec3_normalize(
         (shz_vec3_t){rand() % 6283 / 1000.0f, rand() % 6283 / 1000.0f,
-                     rand() % 6283 / 1000.0f});
+                     rand() % 6283 / 10000.0f});
     new_confetti->particles[i].start_angle = (float)(rand() % 6283) / 1000.0f;
 
     shz_sincos_t angle_sincos = shz_sincosf(velocity_angle);
@@ -34,9 +34,8 @@ confetti_cluster_t *confetti_create(shz_vec2_t position, enj_color_t color_src,
         shz_vec2_add(position, new_confetti->particles[i].velocity);
 
     // new_confetti->particles[i].rotation = 0.0f;
-    new_confetti->particles[i].rotation_speed =
-        ((rand() % 2000) / 1000.0f - 1.0f) * 5.0f; // -5 to +5
-    new_confetti->particles[i].size = 1.0f;
+    int cr_speed = rand() % 2000;
+    new_confetti->particles[i].rotation_speed = (3.0f + cr_speed / 1000.0f) * (rand() & 1 ? 1.0f : -1.0f);
   }
   new_confetti->color_src = color_src;
   new_confetti->color_dst = color_dst;
@@ -84,7 +83,7 @@ int confetti_update(confetti_cluster_t *confetti) {
         confetti->particles[i].position, confetti->particles[i].velocity);
     // confetti->particles[i].rotation += confetti->particles[i].rotation_speed;
     // Apply simple gravity
-    confetti->particles[i].velocity.y -= 0.05f;
+    confetti->particles[i].velocity.y -= 0.03f;
   }
   render_confetti(confetti);
   return 1; // Confetti is still active

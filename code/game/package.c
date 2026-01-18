@@ -96,8 +96,10 @@ int package_update(pkg_t *pkg, float delta_time) {
         pkg->moving = 0;
         render_pkg(pkg);
         // Apply damage to the player
+        float force = shz_vec2_magnitude(delta);
+        printf("delta magnitude: %f\n", force);
         confetti_create(pkg->position, player->color.primary,
-                        pkg->origin->color.primary, 55, 2.0f, 90);
+                        pkg->origin->color.primary, 50 + (int)(force * 20), 1.0f + force*0.5f, 90 + (int)(force * 30));
 
         if (player == pkg->origin) {
           // Self-hit, sarcastic sound
@@ -147,7 +149,7 @@ int package_update(pkg_t *pkg, float delta_time) {
         pkg->position.y += delta.y * collision_t;
         pkg->trail[current_frame] = pkg->position;
         pkg->trail_fade = PACKAGE_TRAIL_STEPS;
-        sfx_play(SFX_THUD, 128, sfx_pos2pan(pkg->position.x));
+        sfx_play(SFX_THUD, 64 + (int)(shz_vec2_magnitude(delta) * 64), sfx_pos2pan(pkg->position.x));
         pkg->moving = 0;
         render_pkg(pkg);
         pkg->velocity = (shz_vec2_t){.x = 0.0f, .y = 0.0f};

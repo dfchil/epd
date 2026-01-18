@@ -10,7 +10,6 @@ typedef struct confetti_particle_s {
   shz_vec3_t rotation;
   float rotation_speed;
   float start_angle;
-  float size;
 } confetti_particle_t;
 
 typedef struct confetti_cluster_s {

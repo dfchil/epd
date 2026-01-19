@@ -33,8 +33,8 @@ confetti_cluster_t *confetti_create(shz_vec2_t position, enj_color_t color_src,
         shz_vec2_add(position, new_confetti->particles[i].velocity);
 
     // new_confetti->particles[i].rotation = 0.0f;
-    int cr_speed = rand() % 2000;
-    new_confetti->particles[i].rotation_speed = (3.0f + cr_speed / 1000.0f) * (rand() & 1 ? 1.0f : -1.0f);
+    int cr_speed = rand() % 3000;
+    new_confetti->particles[i].rotation_speed = (6.0f + cr_speed / 1000.0f) * (rand() & 1 ? 1.0f : -1.0f);
   }
   new_confetti->color_src = color_src;
   new_confetti->color_dst = color_dst;

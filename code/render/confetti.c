@@ -3,14 +3,14 @@
 
 #define C_HALF_SIZE 2.0f
 alignas(32) static const shz_vec4_t corner_inputs[4] = {
-    {.x = -C_HALF_SIZE, .y = -C_HALF_SIZE, .z = 0.0f, .w = 1.0f},
-    {.x = C_HALF_SIZE, .y = -C_HALF_SIZE, .z = 0.0f, .w = 1.0f},
-    {.x = C_HALF_SIZE, .y = C_HALF_SIZE, .z = 0.0f, .w = 1.0f},
-    {.x = -C_HALF_SIZE, .y = C_HALF_SIZE, .z = 0.0f, .w = 1.0f},
+    {.x = -C_HALF_SIZE, .y = -C_HALF_SIZE, .z = 1.0f, .w = 1.0f},
+    {.x = -C_HALF_SIZE, .y = +C_HALF_SIZE, .z = 1.0f, .w = 1.0f},
+    {.x = +C_HALF_SIZE, .y = +C_HALF_SIZE, .z = 1.0f, .w = 1.0f},
+    {.x = +C_HALF_SIZE, .y = -C_HALF_SIZE, .z = 1.0f, .w = 1.0f},
 };
 
-void _render_confetti_TR(void* data) {
-  confetti_cluster_t* cluster = (confetti_cluster_t*)data;
+void _render_confetti_TR(void *data) {
+  confetti_cluster_t *cluster = (confetti_cluster_t *)data;
   pvr_dr_state_t state;
   pvr_dr_init(&state);
 
@@ -26,13 +26,13 @@ void _render_confetti_TR(void* data) {
 
   alignas(32) float corners[4][3];
   for (int i = 0; i < cluster->num_particles; i++) {
-    confetti_particle_t* particle = cluster->particles + i;
+    confetti_particle_t *particle = cluster->particles + i;
     const float angle =
         lifetime * 6.28318f * particle->rotation_speed + particle->start_angle;
     shz_quat_t rotation_quat =
         shz_quat_from_axis_angle(particle->rotation, angle);
     shz_xmtrx_init_translation(particle->position.x * ENJ_XSCALE,
-                              vid_mode->height - particle->position.y, 0.0f);
+                               vid_mode->height - particle->position.y, 5.0f);
     shz_xmtrx_apply_scale(ENJ_XSCALE, 1.0f, 1.0f);
     shz_xmtrx_apply_rotation_quat(rotation_quat);
 
@@ -44,6 +44,7 @@ void _render_confetti_TR(void* data) {
         shz_vec3_sub(shz_vec3_deref(corners[1]), shz_vec3_deref(corners[0]));
     shz_vec3_t v1 =
         shz_vec3_sub(shz_vec3_deref(corners[2]), shz_vec3_deref(corners[0]));
+
     hdr_s.argb = shz_vec3_cross(v0, v1).z < 0.0f ? cluster->color_dst.raw
                                                  : cluster->color_src.raw;
     enj_draw_sprite(corners, &state, &hdr_s, NULL);
@@ -51,6 +52,6 @@ void _render_confetti_TR(void* data) {
   pvr_dr_finish();
 }
 
-void render_confetti(confetti_cluster_t* cluster) {
-  enj_render_list_add(PVR_LIST_TR_POLY, _render_confetti_TR, (void*)cluster);
+void render_confetti(confetti_cluster_t *cluster) {
+  enj_render_list_add(PVR_LIST_TR_POLY, _render_confetti_TR, (void *)cluster);
 }

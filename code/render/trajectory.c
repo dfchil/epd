@@ -70,6 +70,7 @@ void render_trajectory_TR(game_player_t *player) {
       if (collision_delta > 0.0f) {
         terrain_index_0 = tidx;
         terrain_index_1 = tidx + 1;
+        points[i + 1] = points[i];
         points[i] =
             shz_vec2_add(points[i - 1], shz_vec2_scale(dv0, collision_delta));
         break;
@@ -79,27 +80,29 @@ void render_trajectory_TR(game_player_t *player) {
   render_strip_line(
       points, i,
       &(shz_vec3_t){.x = (float)((scene_t *)player->scene)->offset_x - 0.5f,
-                    .y = +vid_mode->height,
+                    .y = 0.0f,
                     .z = 33.0f},
       TRAJECTORY_WIDTH,
       (enj_color_t){.r = player->color.primary.r,
                     .g = player->color.primary.g,
                     .b = player->color.primary.b,
-                    .a = 0x30},
+                    .a = 64},
       PVR_LIST_TR_POLY, NULL);
 
-//   if (player->controller.port == ENJ_PORT_A && terrain_index_0 >= 0 &&
-//       terrain_index_1 <= terrain->num_verts) {
-//     render_strip_line(
-//         terrain->verts + terrain_index_0, terrain_index_1 - terrain_index_0 + 1,
-//         &(shz_vec3_t){.x = (float)((scene_t *)player->scene)->offset_x - 0.5f,
-//                       .y = 0.0f,
-//                       .z = 33.0f},
-//         1.f,
-//         (enj_color_t){.r = player->color.primary.r,
-//                       .g = player->color.primary.g,
-//                       .b = player->color.primary.b,
-//                       .a = 0xff},
-//         PVR_LIST_TR_POLY, NULL);
-//   }
+  //   if (player->controller.port == ENJ_PORT_A && terrain_index_0 >= 0 &&
+  //       terrain_index_1 <= terrain->num_verts) {
+  //     render_strip_line(
+  //         terrain->verts + terrain_index_0, terrain_index_1 - terrain_index_0
+  //         + 1,
+  //         &(shz_vec3_t){.x = (float)((scene_t *)player->scene)->offset_x -
+  //         0.5f,
+  //                       .y = 0.0f,
+  //                       .z = 33.0f},
+  //         1.f,
+  //         (enj_color_t){.r = player->color.primary.r,
+  //                       .g = player->color.primary.g,
+  //                       .b = player->color.primary.b,
+  //                       .a = 0xff},
+  //         PVR_LIST_TR_POLY, NULL);
+  //   }
 }

@@ -3,6 +3,7 @@
 #include <mortarlity/game/package.h>
 #include <mortarlity/render/player.h>
 #include <mortarlity/sfx/sounds.h>
+#include <stdlib.h>
 
 static player_col_def_t _player_colors[] = {
     {.primary = {.raw = 0xff14a5ff}, .contrast = {.raw = 0}},  // blue
@@ -22,6 +23,7 @@ static player_col_def_t _player_colors[] = {
 #define ANGLE_MIN 0.872665  // 50 degrees in radians
 #define SHOT_POWER_BIG_STEP (MAX_SHOOT_POWER / 40.0f)
 #define SHOT_POWER_SMALL_STEP (MAX_SHOOT_POWER / 200.0f)
+#define ANGLE_SLOW_MOVE 0.001f
 
 #ifndef SHZ_ABS
 #define SHZ_ABS(x) ((x) < 0 ? -(x) : (x))
@@ -74,6 +76,8 @@ void player_initialize(int player_index, void* scene) {
   player->controller.updatefun = NULL;
   player->controller.state = NULL;
   player->controller.port = (enj_ctrl_port_name_e)(ENJ_PORT_A + player_index);
+
+  player->x_drift = ANGLE_SLOW_MOVE * (rand() & 1 ? 1.0f : -1.0f);
 }
 
 int player_update(game_player_t* player) {
@@ -110,25 +114,26 @@ int player_update(game_player_t* player) {
   }
   if (state.button.LEFT == ENJ_BUTTON_DOWN) {
     player->shoot_angle += 0.01f;
-    if (player->shoot_angle > ANGLE_MAX) {
-      player->shoot_angle = ANGLE_MAX;
-    }
   }
   if (state.button.RIGHT == ENJ_BUTTON_DOWN) {
     player->shoot_angle -= 0.01f;
   }
   if (SHZ_ABS(state.joyx) > 10) {
-    player->shoot_angle += 0.001f * -((float)state.joyx) / 128.0f;
+    player->shoot_angle += ANGLE_SLOW_MOVE * -((float)state.joyx) / 128.0f;
   }
-  if (SHZ_ABS(state.joyy) > 10) {
-    player->shoot_power -= SHOT_POWER_SMALL_STEP * ((float)state.joyy) / 128.0f;
-  }
-
+  player->shoot_angle += player->x_drift;  
+  
   if (player->shoot_angle < ANGLE_MIN) {
     player->shoot_angle = ANGLE_MIN;
+    player->x_drift = player->x_drift * -1.0f;
   }
   if (player->shoot_angle > ANGLE_MAX) {
+    player->x_drift = player->x_drift * -1.0f;
     player->shoot_angle = ANGLE_MAX;
+  }
+  
+  if (SHZ_ABS(state.joyy) > 10) {
+    player->shoot_power -= SHOT_POWER_SMALL_STEP * ((float)state.joyy) / 128.0f;
   }
   if (player->shoot_power > MAX_SHOOT_POWER) {
     player->shoot_power = MAX_SHOOT_POWER;

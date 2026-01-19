@@ -1,7 +1,4 @@
-# Elliptical
-# Package 
-# Delivery
-# System
+# Arched Package Delivery System
 
 Deliver packages to all nodes to earn points
 Have to distribute to every node before you can earn point for distributin to the same node again. 
@@ -12,11 +9,26 @@ When a node is delivered to, it becomes unavailbe for deliveres for some time sc
 
 Nodes can hit themselved to deny delivery, with the added punishment of the package firing mechanism only rechargin after end of stun. 
 
-# sweep mode
-angle sweeps from one end of screen to the other, 
-player controls height and can hold trigger to either hold in place or double movement
 
 increasing velocity also increases ground movement speed, but probably not proportionally
 
+
+##  Game modes:
+### blitzround
+near zero delay on reload, no targeting help
+
+### sweep mode
+angle sweeps from one end of screen to the other, 
+player controls height and can hold trigger to either hold in place or double movement
+
+### paint mode
+paint the line with your color (could this work?)
+
+
 # music mode
 insert CD, seed is calculated from track data, round time is track length
+
+
+
+-- later: 
+dark mode - send out flares to see landscape 

@@ -6,7 +6,7 @@
 #include <sh4zam/shz_sh4zam.h>
 
 #define num_trajectory_points 127
-#define TRAJECTORY_WIDTH 0.75f
+#define TRAJECTORY_WIDTH .75f
 void render_trajectory_TR(game_player_t *player) {
   const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
   const terrain_t *terrain = ((scene_t *)player->scene)->terrain;

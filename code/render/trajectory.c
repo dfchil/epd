@@ -79,7 +79,7 @@ void render_trajectory_TR(game_player_t *player) {
   render_strip_line(
       points, i,
       &(shz_vec3_t){.x = (float)((scene_t *)player->scene)->offset_x - 0.5f,
-                    .y = 0.0f,
+                    .y = +vid_mode->height,
                     .z = 33.0f},
       TRAJECTORY_WIDTH,
       (enj_color_t){.r = player->color.primary.r,

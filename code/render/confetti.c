@@ -1,9 +1,5 @@
 #include <mortarlity/render/confetti.h>
-
-static inline shz_vec3_t perspective_div(shz_vec4_t v) {
-  const float inv_w = shz_invf_fsrra(v.w);
-  return shz_vec3_init(v.x * inv_w, v.y * inv_w, inv_w);
-}
+#include <mortarlity/render/primitives.h>
 
 #define C_HALF_SIZE 2.0f
 alignas(32) static const shz_vec4_t corner_inputs[4] = {
@@ -13,7 +9,7 @@ alignas(32) static const shz_vec4_t corner_inputs[4] = {
     {.x = -C_HALF_SIZE, .y = C_HALF_SIZE, .z = 0.0f, .w = 1.0f},
 };
 
-void _render_confett_TR(void* data) {
+void _render_confetti_TR(void* data) {
   confetti_cluster_t* cluster = (confetti_cluster_t*)data;
   pvr_dr_state_t state;
   pvr_dr_init(&state);
@@ -42,7 +38,7 @@ void _render_confett_TR(void* data) {
 
     for (int c = 0; c < 4; c++) {
       shz_vec3_deref(corners[c]) =
-          perspective_div(shz_xmtrx_transform_vec4(corner_inputs[c]));
+          render_perspective_div(shz_xmtrx_transform_vec4(corner_inputs[c]));
     }
     shz_vec3_t v0 =
         shz_vec3_sub(shz_vec3_deref(corners[1]), shz_vec3_deref(corners[0]));
@@ -56,5 +52,5 @@ void _render_confett_TR(void* data) {
 }
 
 void render_confetti(confetti_cluster_t* cluster) {
-  enj_render_list_add(PVR_LIST_TR_POLY, _render_confett_TR, (void*)cluster);
+  enj_render_list_add(PVR_LIST_TR_POLY, _render_confetti_TR, (void*)cluster);
 }

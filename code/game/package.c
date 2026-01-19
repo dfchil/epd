@@ -97,9 +97,8 @@ int package_update(pkg_t *pkg, float delta_time) {
         render_pkg(pkg);
         // Apply damage to the player
         float force = shz_vec2_magnitude(delta);
-        printf("delta magnitude: %f\n", force);
         confetti_create(pkg->position, player->color.primary,
-                        pkg->origin->color.primary, 50 + (int)(force * 20), 1.0f + force*0.5f, 90 + (int)(force * 30));
+                        pkg->origin->color.primary, 50 + (int)(force * 20), 1.0f + force*0.5f, 120 + (int)(force * 30));
 
         if (player == pkg->origin) {
           // Self-hit, sarcastic sound

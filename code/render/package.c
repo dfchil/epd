@@ -105,7 +105,7 @@ void _render_package_TR(void *data) {
   // shadow_color.a = 255;
 
   // terrain_t* terrain = (terrain_t*)((scene_t*)pkg->origin->scene)->terrain;
-  // render_strip_line(terrain->verts + pkg->shadow_min_x, pkg->shadow_max_x -
+  // render_strip_line_col(terrain->verts + pkg->shadow_min_x, pkg->shadow_max_x -
   // pkg->shadow_min_x + 1,
   //                   &(shz_vec3_t){.x = - 0.5f, .y = 0.0f, .z
   //                   = 22.1f}, 2.333f, shadow_color, PVR_LIST_TR_POLY, NULL);

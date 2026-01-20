@@ -6,21 +6,22 @@
 #include <stdlib.h>
 
 static player_col_def_t _player_colors[] = {
-    {.primary = {.raw = 0xff14a5ff}, .contrast = {.raw = 0}},  // blue
+    {.primary = {.raw = 0xff14a5ff}, .contrast = {.raw = 0}}, // blue
     {.primary = {.raw = 0xffffc010},
-     .contrast = {.raw = 0}},  // light orange/gold
-    {.primary = {.raw = 0xffff450a}, .contrast = {.raw = 0}},  // red
-    {.primary = {.raw = 0xff0fff50}, .contrast = {.raw = 0}},  // neon green
-    {.primary = {.raw = 0xff9c27ff}, .contrast = {.raw = 0}},  // Purple
-    {.primary = {.raw = 0xffc9c0bb}, .contrast = {.raw = 0}},  // silver
-    {.primary = {.raw = 0xffff6ec7}, .contrast = {.raw = 0}},  // neon pink
-    {.primary = {.raw = 0xff009b7d}, .contrast = {.raw = 0}},  // teal
+     .contrast = {.raw = 0}}, // light orange/gold
+    {.primary = {.raw = 0xffff450a}, .contrast = {.raw = 0}}, // red
+    {.primary = {.raw = 0xff0fff50}, .contrast = {.raw = 0}}, // neon green
+    {.primary = {.raw = 0xff9c27ff}, .contrast = {.raw = 0}}, // Purple
+    {.primary = {.raw = 0xffc9c0bb}, .contrast = {.raw = 0}}, // silver
+    {.primary = {.raw = 0xffff6ec7}, .contrast = {.raw = 0}}, // neon pink
+    {.primary = {.raw = 0xff009b7d}, .contrast = {.raw = 0}}, // teal
 };
 
 #define NUM_PLAYER_COLORS (sizeof(_player_colors) / sizeof(_player_colors[0]))
+#define DEAD_ZONE 5
 
-#define ANGLE_MAX 2.26893   // 130 degrees in radians
-#define ANGLE_MIN 0.872665  // 50 degrees in radians
+#define ANGLE_MAX 2.26893  // 130 degrees in radians
+#define ANGLE_MIN 0.872665 // 50 degrees in radians
 #define SHOT_POWER_BIG_STEP (MAX_SHOOT_POWER / 40.0f)
 #define SHOT_POWER_SMALL_STEP (MAX_SHOOT_POWER / 200.0f)
 #define ANGLE_SLOW_MOVE 0.001f
@@ -38,9 +39,9 @@ player_col_def_t player_color_get(int player_index) {
 
 void player_setup_colors() {
   _player_colors[1].contrast.raw =
-      _player_colors[5].primary.raw;  // copy silver to gold
+      _player_colors[5].primary.raw; // copy silver to gold
   _player_colors[5].contrast.raw =
-      _player_colors[1].primary.raw;  // copy gold to silver
+      _player_colors[1].primary.raw; // copy gold to silver
 
   for (size_t i = 0; i < NUM_PLAYER_COLORS; i++) {
     enj_color_t negcol;
@@ -61,13 +62,15 @@ void player_setup_colors() {
   }
 }
 
-void player_initialize(int player_index, void* scene) {
-  game_player_t* player = &((scene_t*)scene)->players[player_index];
-  player->position = ((scene_t*)scene)->terrain->player_positions[player_index];
+void player_initialize(int player_index, void *scene) {
+  game_player_t *player = &((scene_t *)scene)->players[player_index];
+  player->position =
+      ((scene_t *)scene)->terrain->player_positions[player_index];
   player->color = _player_colors[player_index % NUM_PLAYER_COLORS];
   player->shoot_angle =
-      ANGLE_MIN + (ANGLE_MAX - ANGLE_MIN) * player_index /
-                      (NUM_PLAYER_COLORS - 1);  // point in different directions
+      (ANGLE_MIN * 2) +
+      (ANGLE_MAX - (2 * ANGLE_MIN)) * player_index /
+          (NUM_PLAYER_COLORS - 1); // point in different directions
   player->shoot_power =
       (MAX_SHOOT_POWER - MIN_SHOOT_POWER) * 0.5f + MIN_SHOOT_POWER;
   player->cooldown_timer = SHOT_COOLDOWN_FRAMES;
@@ -76,10 +79,11 @@ void player_initialize(int player_index, void* scene) {
   player->controller.state = NULL;
   player->controller.port = (enj_ctrl_port_name_e)(ENJ_PORT_A + player_index);
 
-  player->x_drift = ANGLE_SLOW_MOVE * (rand() & 1 ? 1.0f : -1.0f);
+  player->aim_flags.aim_drifting = NO_DRIFT;
+//      (rand() & 1) ? DRIFTING_RIGHT : DRIFTING_LEFT;
 }
 
-int player_update(game_player_t* player) {
+int player_update(game_player_t *player) {
   // do good stuff here in future
   if (player->cooldown_timer > 0) {
     player->cooldown_timer--;
@@ -90,7 +94,7 @@ int player_update(game_player_t* player) {
   }
   if (player->cooldown_timer <= 0 && state.button.A == ENJ_BUTTON_DOWN) {
     // shoot
-    player->cooldown_timer = SHOT_COOLDOWN_FRAMES;  // 1 second cooldown
+    player->cooldown_timer = SHOT_COOLDOWN_FRAMES; // 1 second cooldown
 
     const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
     package_create(player->position.x + barrel.cos * BARREL_OFFSET,
@@ -113,36 +117,51 @@ int player_update(game_player_t* player) {
   if (state.button.RIGHT == ENJ_BUTTON_DOWN) {
     player->shoot_angle -= 0.01f;
   }
-  if (SHZ_ABS(state.joyx) > 10) {
-    player->shoot_angle += ANGLE_SLOW_MOVE * -((float)state.joyx) / 128.0f;
+  // if (SHZ_ABS(state.joyx) > DEAD_ZONE) {
+  //   player->shoot_angle += ANGLE_SLOW_MOVE * -((float)state.joyx) / 128.0f;
+  // }
+  if (state.ltrigger > DEAD_ZONE) {
+    player->shoot_angle += ANGLE_SLOW_MOVE * ((float)state.ltrigger) / 255.0f;
   }
-  player->shoot_angle += player->x_drift;
+  if (state.rtrigger > DEAD_ZONE) {
+    player->shoot_angle -= ANGLE_SLOW_MOVE * ((float)state.rtrigger) / 255.0f;
+  }
 
-  if (player->shoot_angle < ANGLE_MIN) {
-    player->shoot_angle = ANGLE_MIN;
-    player->x_drift = player->x_drift * -1.0f;
+  if (player->aim_flags.aim_drifting != NO_DRIFT) {
+    player->shoot_angle +=
+        ((player->aim_flags.aim_drifting == DRIFTING_LEFT) ? ANGLE_SLOW_MOVE
+                                                           : -ANGLE_SLOW_MOVE);
   }
-  if (player->shoot_angle > ANGLE_MAX) {
-    player->x_drift = player->x_drift * -1.0f;
-    player->shoot_angle = ANGLE_MAX;
+
+  if (player->shoot_angle <= ANGLE_MIN &&
+      player->aim_flags.aim_drifting == DRIFTING_LEFT) {
+    player->aim_flags.aim_drifting = DRIFTING_RIGHT;
   }
-  if (player->x_drift < 0 &&
-      player->aiming_at >= ((scene_t*)player->scene)->terrain->num_verts - 3) {
-    player->x_drift = player->x_drift * -1.0f;
+  if (player->shoot_angle >= ANGLE_MAX &&
+      player->aim_flags.aim_drifting == DRIFTING_RIGHT) {
+    player->aim_flags.aim_drifting = DRIFTING_LEFT;
   }
-  if (player->x_drift > 0 && player->aiming_at <= 1) {
-    player->x_drift = player->x_drift * -1.0f;
+  player->shoot_angle = SHZ_CLAMP(player->shoot_angle, ANGLE_MIN, ANGLE_MAX);
+
+  if (player->aim_exit_screen.left || player->aim_exit_screen.right) {
+    player->aim_flags.aim_drifting =
+        (player->aim_flags.aim_drifting == DRIFTING_LEFT) ? DRIFTING_RIGHT
+                                                          : DRIFTING_LEFT;
   }
-  if (player->controller.port == ENJ_PORT_A) {
-    printf("Angle: %.2f Power: %.2f Cooldown: %d AimAt: %d x_drift: %.6f \n",
+  if (state.button.B == ENJ_BUTTON_DOWN) {
+    printf("Angle: %.2f Power: %.2f Cooldown: %d AimAt: (%.2f, %.2f) "
+           "aim_drifting: %d, exit_left: %d, exit_right: %d \n",
            player->shoot_angle, player->shoot_power, player->cooldown_timer,
-           player->aiming_at, player->x_drift);
+           player->aiming_at.x, player->aiming_at.y, player->aim_flags.aim_drifting,
+           player->aim_exit_screen.left,
+           player->aim_exit_screen.right);
   }
 
-  if (SHZ_ABS(state.joyy) > 10) {
+  if (SHZ_ABS(state.joyy) > DEAD_ZONE) {
     player->shoot_power -= SHOT_POWER_SMALL_STEP * ((float)state.joyy) / 128.0f;
   }
-  player->shoot_power = SHZ_CLAMP(player->shoot_power, MIN_SHOOT_POWER, MAX_SHOOT_POWER);
+  player->shoot_power =
+      SHZ_CLAMP(player->shoot_power, MIN_SHOOT_POWER, MAX_SHOOT_POWER);
 
   return 1;
 }

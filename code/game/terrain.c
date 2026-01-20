@@ -43,6 +43,8 @@ terrain_t* terrain_generate(int num_players, float roughness, float prev_last_y)
   for (size_t i = 0; i < num_verts; i++) {
     terrain->verts[i].x = x_step * (float)i;
   }
+  terrain->verts[0].x -= 2.0f;
+  terrain->verts[num_verts-1].x += 2.0f;
 
   terrain->min_y = (vid_mode->height >> 3);
   terrain->max_y = (vid_mode->height >> 4) * 11;

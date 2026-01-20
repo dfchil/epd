@@ -6,7 +6,7 @@
 
 SHZ_INLINE shz_vec3_t render_perspective_div(shz_vec4_t v) { return v.xyz; }
 
-void render_strip_line(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
+void render_strip_line_col(shz_vec2_t *points, int point_count, shz_vec3_t *offset,
                        float line_width, enj_color_t color, pvr_list_t list,
                        float *zvalues);
 

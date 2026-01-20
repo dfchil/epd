@@ -46,6 +46,8 @@ alignas(32) const static float zvalues[] = {
   100.0f * arrow_vertices[8].y / arrow_vertices[5].y,
 };
 
+#define NUM_ARROW_VERTICES (sizeof(arrow_vertices) / sizeof(arrow_vertices[0]))
+
 // clang-format on
 
 void _render_arrow_OP(void *data) {
@@ -53,37 +55,12 @@ void _render_arrow_OP(void *data) {
   const float arrow_scale =
       1.2f + (player->shoot_power / MAX_SHOOT_POWER) * 2.5f;
   const float line_thickness = ARROW_LINE_THICKNESS * shz_sqrtf(arrow_scale);
-
-  float offset_x =
-      (float)((scene_t *)player->scene)->offset_x - 0.5f + player->position.x;
-
-  render_strip_line(
-      player->arrow_vertices,
-      sizeof(arrow_vertices) / sizeof(arrow_vertices[0]),
-      &(shz_vec3_t){.x = offset_x, .y = player->position.y, .z = 1.0f},
-      line_thickness, player->color.primary, PVR_LIST_OP_POLY, NULL);
-
-  if (player->cooldown_timer != 0 &&
-      player->cooldown_timer <= SHOT_COOLDOWN_FRAMES) {
-
-    const float fillheight =
-        1.0f - (player->cooldown_timer / (float)SHOT_COOLDOWN_FRAMES);
-    render_strip_line(
-        player->arrow_vertices,
-        sizeof(arrow_vertices) / sizeof(arrow_vertices[0]),
-        &(shz_vec3_t){
-            .x = offset_x, .y = player->position.y, .z = -100.0f * fillheight},
-        line_thickness, player->color.contrast, PVR_LIST_OP_POLY, zvalues);
-  }
-}
-
-void render_arrow(game_player_t *player) {
   const shz_sincos_t barrel = shz_sincosf(player->shoot_angle + 1.5708f);
-  const float arrow_scale =
-      1.2f + (player->shoot_power / MAX_SHOOT_POWER) * 2.5f;
 
-  for (int i = 0; i < 8; i++) {
-    player->arrow_vertices[i] = (shz_vec2_t){
+  shz_vec2_t av_inst[9];
+
+  for (int i = 0; i < NUM_ARROW_VERTICES - 1; i++) {
+    av_inst[i] = (shz_vec2_t){
         .x = barrel.sin * BARREL_OFFSET -
              (arrow_scale * (arrow_vertices[i].x * barrel.cos -
                              arrow_scale * arrow_vertices[i].y * barrel.sin)),
@@ -92,6 +69,28 @@ void render_arrow(game_player_t *player) {
                              arrow_scale * arrow_vertices[i].y * barrel.cos)),
     };
   }
-  player->arrow_vertices[8] = player->arrow_vertices[0];
+  av_inst[NUM_ARROW_VERTICES - 1] = av_inst[0];
+  float offset_x =
+      (float)((scene_t *)player->scene)->offset_x - 0.5f + player->position.x;
+
+  render_strip_line_col(
+      av_inst, NUM_ARROW_VERTICES,
+      &(shz_vec3_t){.x = offset_x, .y = player->position.y, .z = 1.0f},
+      line_thickness, player->color.primary, PVR_LIST_OP_POLY, NULL);
+
+  if (player->cooldown_timer != 0 &&
+      player->cooldown_timer <= SHOT_COOLDOWN_FRAMES) {
+
+    const float fillheight =
+        1.0f - (player->cooldown_timer / (float)SHOT_COOLDOWN_FRAMES);
+    render_strip_line_col(
+        av_inst, NUM_ARROW_VERTICES,
+        &(shz_vec3_t){
+            .x = offset_x, .y = player->position.y, .z = -100.0f * fillheight},
+        line_thickness, player->color.contrast, PVR_LIST_OP_POLY, zvalues);
+  }
+}
+
+void render_arrow(game_player_t *player) {
   enj_render_list_add(PVR_LIST_OP_POLY, _render_arrow_OP, (void *)player);
 }

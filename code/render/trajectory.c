@@ -5,13 +5,12 @@
 #include <mortarlity/render/trajectory.h>
 #include <sh4zam/shz_sh4zam.h>
 
-#define num_trajectory_points 127
+#define MAX_TRAJECTORY_POINTS 127
 #define TRAJECTORY_WIDTH .75f
-void render_trajectory_TR(game_player_t *player) {
-  const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
-  const terrain_t *terrain = ((scene_t *)player->scene)->terrain;
 
-  shz_vec2_t points[num_trajectory_points];
+int _calc_trajectory_points(shz_vec2_t* points, game_player_t* player) {
+  const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
+  const terrain_t* terrain = ((scene_t*)player->scene)->terrain;
   const float time_step = 0.5f;
 
   int i = 0;
@@ -22,7 +21,7 @@ void render_trajectory_TR(game_player_t *player) {
   float collision_delta = -1.0f;
   int terrain_index_0, terrain_index_1;
 
-  for (i = 1; i < num_trajectory_points; i++) {
+  for (i = 1; i < MAX_TRAJECTORY_POINTS; i++) {
     if (collision_delta > 0.0f) {
       break;
     }
@@ -66,10 +65,8 @@ void render_trajectory_TR(game_player_t *player) {
           shz_vec2_sub(terrain->verts[tidx + 1], terrain->verts[tidx]);
       collision_delta = collision_line_line(points + i - 1, &dv0,
                                             terrain->verts + tidx, &dv1);
-
       if (collision_delta > 0.0f) {
-        terrain_index_0 = tidx;
-        terrain_index_1 = tidx + 1;
+        player->aiming_at = tidx;
         points[i + 1] = points[i];
         points[i] =
             shz_vec2_add(points[i - 1], shz_vec2_scale(dv0, collision_delta));
@@ -77,9 +74,17 @@ void render_trajectory_TR(game_player_t *player) {
       }
     }
   }
+  return i;
+}
+
+void render_trajectory_TR(game_player_t* player) {
+  shz_vec2_t points[MAX_TRAJECTORY_POINTS];
+
+  int i = _calc_trajectory_points(points, player);
+
   render_strip_line(
       points, i,
-      &(shz_vec3_t){.x = (float)((scene_t *)player->scene)->offset_x - 0.5f,
+      &(shz_vec3_t){.x = (float)((scene_t*)player->scene)->offset_x - 0.5f,
                     .y = 0.0f,
                     .z = 33.0f},
       TRAJECTORY_WIDTH,

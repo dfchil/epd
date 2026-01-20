@@ -19,16 +19,16 @@ typedef struct {
 
 
 typedef struct game_player_s {
+  void *scene;
   shz_vec2_t position;
-  uint16_t health;
   player_col_def_t color;
   float shoot_angle;
   float shoot_power;
   int cooldown_timer;
   enj_abstract_ctrlr_t controller;
-  void *scene;
   shz_vec2_t arrow_vertices[9];
   float x_drift;
+  uint8_t aiming_at;
 } game_player_t;
 
 void player_initialize(int player_index, void *scene);

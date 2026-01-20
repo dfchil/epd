@@ -1,6 +1,6 @@
+#include <mortarlity/game/package.h>
 #include <mortarlity/game/player.h>
 #include <mortarlity/game/scene.h>
-#include <mortarlity/game/package.h>
 #include <mortarlity/render/player.h>
 #include <mortarlity/sfx/sounds.h>
 #include <stdlib.h>
@@ -64,7 +64,6 @@ void player_setup_colors() {
 void player_initialize(int player_index, void* scene) {
   game_player_t* player = &((scene_t*)scene)->players[player_index];
   player->position = ((scene_t*)scene)->terrain->player_positions[player_index];
-  player->health = 100;
   player->color = _player_colors[player_index % NUM_PLAYER_COLORS];
   player->shoot_angle =
       ANGLE_MIN + (ANGLE_MAX - ANGLE_MIN) * player_index /
@@ -82,10 +81,6 @@ void player_initialize(int player_index, void* scene) {
 
 int player_update(game_player_t* player) {
   // do good stuff here in future
-  if (player->health <= 0) {
-    player->health = 0;
-    return 0;  // player is dead
-  }
   if (player->cooldown_timer > 0) {
     player->cooldown_timer--;
   }
@@ -99,9 +94,9 @@ int player_update(game_player_t* player) {
 
     const shz_sincos_t barrel = shz_sincosf(player->shoot_angle);
     package_create(player->position.x + barrel.cos * BARREL_OFFSET,
-                 player->position.y + barrel.sin * BARREL_OFFSET,
-                 barrel.cos * player->shoot_power,
-                 barrel.sin * player->shoot_power, player);
+                   player->position.y + barrel.sin * BARREL_OFFSET,
+                   barrel.cos * player->shoot_power,
+                   barrel.sin * player->shoot_power, player);
     sfx_play(SFX_LAUNCH,
              63 + (int)(192.0f * (int)(player->shoot_power / MAX_SHOOT_POWER)),
              sfx_pos2pan(player->position.x));
@@ -121,8 +116,8 @@ int player_update(game_player_t* player) {
   if (SHZ_ABS(state.joyx) > 10) {
     player->shoot_angle += ANGLE_SLOW_MOVE * -((float)state.joyx) / 128.0f;
   }
-  player->shoot_angle += player->x_drift;  
-  
+  player->shoot_angle += player->x_drift;
+
   if (player->shoot_angle < ANGLE_MIN) {
     player->shoot_angle = ANGLE_MIN;
     player->x_drift = player->x_drift * -1.0f;
@@ -131,16 +126,23 @@ int player_update(game_player_t* player) {
     player->x_drift = player->x_drift * -1.0f;
     player->shoot_angle = ANGLE_MAX;
   }
-  
+  if (player->x_drift < 0 &&
+      player->aiming_at >= ((scene_t*)player->scene)->terrain->num_verts - 3) {
+    player->x_drift = player->x_drift * -1.0f;
+  }
+  if (player->x_drift > 0 && player->aiming_at <= 1) {
+    player->x_drift = player->x_drift * -1.0f;
+  }
+  if (player->controller.port == ENJ_PORT_A) {
+    printf("Angle: %.2f Power: %.2f Cooldown: %d AimAt: %d x_drift: %.6f \n",
+           player->shoot_angle, player->shoot_power, player->cooldown_timer,
+           player->aiming_at, player->x_drift);
+  }
+
   if (SHZ_ABS(state.joyy) > 10) {
     player->shoot_power -= SHOT_POWER_SMALL_STEP * ((float)state.joyy) / 128.0f;
   }
-  if (player->shoot_power > MAX_SHOOT_POWER) {
-    player->shoot_power = MAX_SHOOT_POWER;
-  }
-  if (player->shoot_power < MIN_SHOOT_POWER) {
-    player->shoot_power = MIN_SHOOT_POWER;
-  }
+  player->shoot_power = SHZ_CLAMP(player->shoot_power, MIN_SHOOT_POWER, MAX_SHOOT_POWER);
 
   return 1;
 }

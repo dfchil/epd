@@ -6,7 +6,7 @@
 #include <sh4zam/shz_sh4zam.h>
 
 #define MAX_TRAJECTORY_POINTS 192
-#define TRAJECTORY_WIDTH 0.75f
+#define TRAJECTORY_WIDTH 2.75f
 #define GRAVITY_ACCELERATION 9.81f // pixels per second squared
 
 static void _calc_trajectory_points(shz_vec2_t *points, game_player_t *player,

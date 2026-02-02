@@ -95,7 +95,7 @@ int package_update(pkg_t *pkg, float delta_time) {
         pkg->trail_fade = PACKAGE_TRAIL_STEPS;
         pkg->moving = 0;
         render_pkg(pkg);
-        // Apply damage to the player
+
         float force = shz_vec2_magnitude(delta);
         confetti_create(pkg->position, player->color.primary,
                         pkg->origin->color.primary, 50 + (int)(force * 20), 1.0f + force*0.5f, 120 + (int)(force * 30));
@@ -117,10 +117,10 @@ int package_update(pkg_t *pkg, float delta_time) {
     int terrain_index_1 = -1;
 
     terrain_index_0 =
-        (int)(SHZ_MIN(pkg->position.x, pkg->position.x + delta.x) /
+        (int)(shz_fminf(pkg->position.x, pkg->position.x + delta.x) /
               (vid_mode->width / terrain->num_verts));
     terrain_index_1 =
-        (int)(SHZ_MAX(pkg->position.x, pkg->position.x + delta.x) /
+        (int)(shz_fmaxf(pkg->position.x, pkg->position.x + delta.x) /
               (vid_mode->width / terrain->num_verts));
     terrain_index_0 -= 1;
     if (terrain_index_0 < 0) {

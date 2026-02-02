@@ -51,10 +51,10 @@ static void _calc_trajectory_points(shz_vec2_t *points, game_player_t *player,
     }
 
     if (*first_terrain_index == -1) {
-      terrain_index_0 = (int)(SHZ_MIN(points[i - 1].x, points[i].x) /
+      terrain_index_0 = (int)(shz_fminf(points[i - 1].x, points[i].x) /
                               (vid_mode->width / terrain->num_verts)) -
                         1;
-      terrain_index_1 = (int)(SHZ_MAX(points[i - 1].x, points[i].x) /
+      terrain_index_1 = (int)(shz_fmaxf(points[i - 1].x, points[i].x) /
                               (vid_mode->width / terrain->num_verts)) +
                         1;
 

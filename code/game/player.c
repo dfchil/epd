@@ -48,15 +48,15 @@ void player_setup_colors() {
     if (_player_colors[i].contrast.raw == 0) {
       negcol = (enj_color_t){
           .a = 255,
-          .r = SHZ_MIN(255 - _player_colors[i].primary.r + 48, 255),
-          .g = SHZ_MIN(255 - _player_colors[i].primary.g + 48, 255),
-          .b = SHZ_MIN(255 - _player_colors[i].primary.b + 48, 255)};
+          .r = shz_fminf(255 - _player_colors[i].primary.r + 48, 255),
+          .g = shz_fminf(255 - _player_colors[i].primary.g + 48, 255),
+          .b = shz_fminf(255 - _player_colors[i].primary.b + 48, 255)};
     } else {
       negcol =
           (enj_color_t){.a = 255,
-                        .r = SHZ_MIN(_player_colors[i].contrast.r + 48, 255),
-                        .g = SHZ_MIN(_player_colors[i].contrast.g + 48, 255),
-                        .b = SHZ_MIN(_player_colors[i].contrast.b + 48, 255)};
+                        .r = shz_fminf(_player_colors[i].contrast.r + 48, 255),
+                        .g = shz_fminf(_player_colors[i].contrast.g + 48, 255),
+                        .b = shz_fminf(_player_colors[i].contrast.b + 48, 255)};
     }
     _player_colors[i].contrast.raw = negcol.raw;
   }
@@ -141,7 +141,7 @@ int player_update(game_player_t *player) {
       player->aim_flags.aim_drifting == DRIFTING_RIGHT) {
     player->aim_flags.aim_drifting = DRIFTING_LEFT;
   }
-  player->shoot_angle = SHZ_CLAMP(player->shoot_angle, ANGLE_MIN, ANGLE_MAX);
+  player->shoot_angle = shz_clampf(player->shoot_angle, ANGLE_MIN, ANGLE_MAX);
 
   if (player->aim_exit_screen.left || player->aim_exit_screen.right) {
     player->aim_flags.aim_drifting =
@@ -161,7 +161,7 @@ int player_update(game_player_t *player) {
     player->shoot_power -= SHOT_POWER_SMALL_STEP * ((float)state.joyy) / 128.0f;
   }
   player->shoot_power =
-      SHZ_CLAMP(player->shoot_power, MIN_SHOOT_POWER, MAX_SHOOT_POWER);
+      shz_clampf(player->shoot_power, MIN_SHOOT_POWER, MAX_SHOOT_POWER);
 
   return 1;
 }
